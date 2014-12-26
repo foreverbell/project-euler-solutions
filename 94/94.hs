@@ -16,7 +16,7 @@ diophantine d = filter (\(x,y) -> x^2-d*y^2 == 1) convergent where
         a' = (n - b * b) `div` a
         x = (root + b) `div` a'
         b' = x * a' - b
-[ getCase1 p | p <- candidate ] ++ [ getCase2 p | p <- candidate ]
+
 getCase1 (x, y)
     | ((2 * x + 1) `mod` 3 == 0) && ((b * h) `mod` 2 == 0) = a + a + b
     | otherwise = -1
