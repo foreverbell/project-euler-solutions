@@ -13,5 +13,5 @@ solve logs' = intersect (concatMap show result) (concat logs')
         g = buildG (0,9) edges
         result = topSort g
 
-main = (readFile "keylog.txt") >>= (putStrLn . solve . lines)
+main = (readFile "p079_keylog.txt") >>= (putStrLn . solve . lines)
     

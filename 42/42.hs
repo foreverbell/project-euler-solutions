@@ -9,4 +9,4 @@ solve input = length triangleWord
           triangleNumber = [ (n * (n + 1)) `div` 2 | n <- [1 .. 100] ]
           triangleWord   = [ x | x <- words, (wordValue x) `elem` triangleNumber ]
 
-main = readFile "words.txt" >>= (print . solve)
+main = readFile "p042_words.txt" >>= (print . solve)

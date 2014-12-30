@@ -14,4 +14,4 @@ solve input = maximum (dp (n - 1) (fromString triangle))
     where triangle = reverse (map words (lines input))
           n = length triangle
 
-main = (readFile "triangle.txt") >>= (print . solve)
+main = (readFile "p067_triangle.txt") >>= (print . solve)

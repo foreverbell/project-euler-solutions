@@ -122,4 +122,4 @@ solve :: String -> Int
 solve input = foldl (\s x -> s + (if x then 1 else 0)) 0 win
     where win = map solveSingle (lines input)
 
-main = readFile "poker.txt" >>= (print . solve)
+main = readFile "p054_poker.txt" >>= (print . solve)

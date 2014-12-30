@@ -6,7 +6,7 @@ splitByComma s = (read a, read (tail b))
     where (a, b) = span (\x -> x /= ',') s
 
 readInput :: IO [(Int, Int)]
-readInput = readFile "base_exp.txt" >>= (return . map splitByComma . words)
+readInput = readFile "p099_base_exp.txt" >>= (return . map splitByComma . words)
 
 solve :: [(Int, Int)] -> Int
 solve xs = fst $ maximumBy (compare `on` value) (zip [1 .. ] xs)

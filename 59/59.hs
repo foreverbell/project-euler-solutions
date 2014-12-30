@@ -30,4 +30,4 @@ solve input = sum result
         decrypte xs = map (xor (findKey xs)) xs
         result = comb3 (decrypte a) (decrypte b) (decrypte c)
         
-main = readFile "cipher1.txt" >>= (print . solve)
+main = readFile "p059_cipher.txt" >>= (print . solve)
