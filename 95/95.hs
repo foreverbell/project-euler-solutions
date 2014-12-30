@@ -1,3 +1,5 @@
+-- run with flags +RTS -K512m -A32m
+
 import qualified Data.Set as S
 import Data.List (foldl')
 import Data.Array.ST
