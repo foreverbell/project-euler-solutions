@@ -8,5 +8,4 @@ firstDay :: Day -> Bool
 firstDay date = (d == 1)
     where (y, m, d) = toGregorian date
 
-main = do
-    print (length (filter (\x -> (firstDay (ModifiedJulianDay x)) && (x - 15385) `mod` 7 == 5) [15385 .. 51909]))
+main = print (length (filter (\x -> (firstDay (ModifiedJulianDay x)) && (x - 15385) `mod` 7 == 5) [15385 .. 51909]))

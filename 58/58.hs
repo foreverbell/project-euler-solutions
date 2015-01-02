@@ -15,10 +15,8 @@ solve seq1 seq2 seq3 p dep
         total = 4 * dep - 3
         ptotal = p + (wrap seq1) + (wrap seq2) + (wrap seq3)
 
-main = do
-    print $ solve seq1 seq2 seq3 0 2
-    where
-        seq1 = [ 4*n^2-10*n+7 | n <- [2 .. ] ]
-        seq2 = [ 4*n^2+1      | n <- [1 .. ] ]
-        seq3 = [ 4*n^2-6*n+3  | n <- [2 .. ] ]
+main = print $ solve seq1 seq2 seq3 0 2 where
+    seq1 = [ 4*n^2-10*n+7 | n <- [2 .. ] ]
+    seq2 = [ 4*n^2+1      | n <- [1 .. ] ]
+    seq3 = [ 4*n^2-6*n+3  | n <- [2 .. ] ]
 

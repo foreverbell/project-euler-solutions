@@ -29,5 +29,4 @@ go d step v@(x, y)
         next = if (step == 0) then 1 else go d (step - 1) (v `plus` (dirs!!d))
         onBoard (x, y) = (x `elem` [0 .. 19]) && (y `elem` [0 .. 19])
 
-main = do
-    print $ maximum [go d 3 (x,y) | d <- [0 .. 3], x <- [0 .. 19], y <- [0 .. 19]]
+main = print $ maximum [go d 3 (x,y) | d <- [0 .. 3], x <- [0 .. 19], y <- [0 .. 19]]

@@ -7,5 +7,4 @@ maxFactor x = helper x 2
             | x `mod` p == 0 = max p $ helper (divideAll x p) (p + 1)
             | otherwise      = helper x (p + 1)
 
-main = do
-    print $ maxFactor 600851475143
+main = print $ maxFactor 600851475143

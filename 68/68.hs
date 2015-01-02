@@ -18,6 +18,5 @@ solve dat
         generate 0 _ xs = xs
         generate dep cur xs = generate (dep - 1) (rotate cur) ((toVal cur) : xs)
 
-main = putStrLn $ maximum $ concatMap (\p -> solve (toArray (10:p))) (permutations [1 .. 9])
-    where
-        toArray xs = listArray (1, length xs) xs
+main = putStrLn $ maximum $ concatMap (\p -> solve (toArray (10:p))) (permutations [1 .. 9]) where
+    toArray xs = listArray (1, length xs) xs

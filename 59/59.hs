@@ -16,18 +16,16 @@ comb3 [a] [b] [] = [a, b]
 comb3 (a:as) (b:bs) (c:cs) = a:b:c:(comb3 as bs cs)
 
 findKey :: [Int] -> Int
-findKey xs = maximumBy (compare `on` score) [(ord 'a') .. (ord 'z')]
-    where
-        score key = length $ filter (isAlpha . chr) $ map (xor key) xs 
+findKey xs = maximumBy (compare `on` score) [(ord 'a') .. (ord 'z')] where
+    score key = length $ filter (isAlpha . chr) $ map (xor key) xs 
         
 solve :: String -> Int
-solve input = sum result
-    where
-        t = T.pack input
-        ts = T.split (== ',') t
-        xs = map (read . (T.unpack)) ts :: [Int]
-        (a,b,c) = group3 [] [] [] 0 xs
-        decrypte xs = map (xor (findKey xs)) xs
-        result = comb3 (decrypte a) (decrypte b) (decrypte c)
+solve input = sum result where
+    t = T.pack input
+    ts = T.split (== ',') t
+    xs = map (read . (T.unpack)) ts :: [Int]
+    (a,b,c) = group3 [] [] [] 0 xs
+    decrypte xs = map (xor (findKey xs)) xs
+    result = comb3 (decrypte a) (decrypte b) (decrypte c)
         
 main = readFile "p059_cipher.txt" >>= (print . solve)

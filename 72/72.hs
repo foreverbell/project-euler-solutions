@@ -1,6 +1,6 @@
 import Data.List (group, foldl')
 
-primesTo m = eratos [2 .. m]  where
+primesTo m = eratos [2 .. m] where
     eratos []     = []
     eratos (p:xs) = p : eratos (xs `minus` [p*p, p*p+p .. m])
     minus (x:xs) (y:ys) = case (compare x y) of 
@@ -21,8 +21,7 @@ factoraize n
             | n `mod` p == 0 = p : (helper ps' $ n `div` p)
             | otherwise = helper ps n
 
-totient n = foldl' (\r (x:_) -> (r `div` x) * (x - 1)) n (group fs)
-    where
-        fs = factoraize n
+totient n = foldl' (\r (x:_) -> (r `div` x) * (x - 1)) n (group fs) where
+    fs = factoraize n
 
 main = print $ (foldl' (\s x -> s + totient x) 0 [1 .. 1000000]) - 1

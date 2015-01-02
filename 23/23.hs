@@ -25,6 +25,5 @@ abundant = [ x | x <- [1 .. 28123], sumOfDivisors x > x ]
 magicNumber' = nub' . sort $ [ x + y | x <- abundant, y <- abundant, x + y <= 28123 ]
 magicNumber  = [1 .. 28123] `minus` magicNumber'
 
-main = do
-    print $ sum magicNumber
+main = print $ sum magicNumber
 

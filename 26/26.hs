@@ -13,7 +13,4 @@ cycleLength n
             | x == 1 = Nothing
             | otherwise = Just (x, (x * 10) `mod` n)
 
-main = do
-    print d
-    where
-        d = maximumBy (compare `on` cycleLength) [3, 5 .. 999]
+main = print $ maximumBy (compare `on` cycleLength) [3, 5 .. 999]

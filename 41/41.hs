@@ -8,8 +8,5 @@ isPrime x
     | otherwise = all (\y -> x `mod` y /= 0) [2 .. (floor $ sqrt $ fromIntegral x)]
 
 -- 8 or 9-digit pandigital is divisable by 3 
-main = do
-    print $ maximum candidate
-    where
-        candidate' = map read (permutations "1234567") :: [Int]
-        candidate  = filter isPrime candidate'
+main = print $ maximum candidate where
+    candidate  = filter isPrime $ map read (permutations "1234567") :: [Int]

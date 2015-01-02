@@ -8,6 +8,5 @@ intersect xs'@(x:xs) ys'@(y:ys) = case (compare x y) of
     LT -> intersect xs ys'
     GT -> intersect xs' ys
 
-main = do
-    print $ is !! 2
+main = print $ is !! 2
     where is = intersect triangle $ intersect pentagonal hexagonal

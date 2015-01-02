@@ -12,14 +12,12 @@ period n root a b index map =
 
 isqrt x = floor $ sqrt $ fromIntegral x
 
-findPeriod n = period n root 1 root 0 M.empty
-    where
-        root = isqrt n
+findPeriod n = period n root 1 root 0 M.empty where
+    root = isqrt n
 
-main = print $ length $ filter (odd . findPeriod) irrational
-    where
-        isSquared x = (isqrt x)^2 == x
-        irrational = filter (not . isSquared) [1 .. 10000]
+main = print $ length $ filter (odd . findPeriod) irrational where
+    isSquared x = (isqrt x)^2 == x
+    irrational = filter (not . isSquared) [1 .. 10000]
 
 -- analysis:
 -- denote the state (a,b) as a / (sqrt n - b), we can prove that a|n-b^2 by induction.

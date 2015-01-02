@@ -12,15 +12,15 @@ minus (x:xs) (y:ys) = case (compare x y) of
     GT -> minus (x:xs) ys
 minus xs _ = xs
 
-isPrimeTable = listArray (1,bound) l
-    where
-        bound = 1000000
-        helper n ps
-            | n > bound = []
-            | null ps || p /= n = False : (helper (n + 1) ps)
-            | p == n = True : (helper (n + 1) (tail ps))
-            where p = head ps
-        l = helper 1 (primesTo bound)
+isPrimeTable = listArray (1,bound) l where
+    bound = 1000000
+    helper n ps
+        | n > bound = []
+        | null ps || p /= n = False : (helper (n + 1) ps)
+        | p == n = True : (helper (n + 1) (tail ps))
+        where p = head ps
+    l = helper 1 (primesTo bound)
+
 isPrime = (!) isPrimeTable
 
 type Mask = [Int]
@@ -51,8 +51,7 @@ compute mask
         primes = filter isPrime converted
         total = length primes
 
-main = do
-    print $ goMask 6 6 0 []
+main = print $ goMask 6 6 0 []
     
 -- consider all valid masks, we can get some key observations:
 -- 0. the answer is 6-digit long;

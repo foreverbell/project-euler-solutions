@@ -1,8 +1,8 @@
 import Data.Ratio
 import Data.List (foldl1')
 
-calculate d = n % d
-    where n = d * 3 `div` 7
+calculate d = n % d where 
+    n = d * 3 `div` 7
 
 maximum' = foldl1' max  -- strict version
 

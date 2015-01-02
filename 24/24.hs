@@ -1,4 +1,3 @@
-import Data.List
+import Data.List (permutations, sort)
 
-main = do
-    print $ (sort (permutations ['0' .. '9'])) !! 999999
+main = print $ (sort (permutations ['0' .. '9'])) !! 999999

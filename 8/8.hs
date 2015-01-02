@@ -6,5 +6,4 @@ digits = map (toInteger . digitToInt) digits_str
 shiftMultiply 0 list = list
 shiftMultiply n list = zipWith (*) list (shiftMultiply (n - 1) (tail list))
 
-main = do
-    print (foldl max 0 (shiftMultiply 12 digits))
+main = print (foldl max 0 (shiftMultiply 12 digits))

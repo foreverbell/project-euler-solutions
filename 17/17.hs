@@ -38,8 +38,7 @@ numberToWord x
 
 countLetters x = foldr ((+) . length) 0 (words (numberToWord x))
 
-main = do
-    print s
-    where s = sum list
-          list = map countLetters [1 .. 1000]
+main = print s where
+    s = sum list
+    list = map countLetters [1 .. 1000]
 

@@ -1,6 +1,3 @@
-import Data.List
+import Data.List (nub)
 
-main = do
-    print $ length term
-    where 
-        term = nub [ a^b | a <- [2 .. 100], b <- [2 .. 100] ]
+main = print $ length $ nub [ a^b | a <- [2 .. 100], b <- [2 .. 100] ]
