@@ -1,4 +1,5 @@
 import Data.List (findIndex)
+import Data.Maybe (fromJust)
 
 primesTo m = eratos [2 .. m]  where
     eratos []     = []
@@ -20,4 +21,4 @@ dp = [ rec n | n <- [0 .. primesN] ] where
 
 ways = [ (dp!!primesN)!!x | x <- [0 .. 100] ]
 
-main = (print . (\(Just x) -> x)) (findIndex (\x -> x > 5000) ways)
+main = (print . fromJust) (findIndex (\x -> x > 5000) ways)

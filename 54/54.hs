@@ -1,6 +1,7 @@
 import Data.List 
 import Data.Function (on)
 import Data.Char (ord)
+import Data.Maybe (fromJust)
 
 type Card = (Int, Char)
 
@@ -100,13 +101,13 @@ parseCard [a,b] = (v, b) where
         | otherwise = ord a - ord '0'
 
 calScore :: [Card] -> (Int, [Int])
-calScore c = (10 - index, (\(Just x) -> x) (result!!index)) where
+calScore c = (10 - index, fromJust (result!!index)) where
     func = [royalFlush, straightFlush, fourOfKind, fullHouse, flush, straight, threeOfKind, twoPairs, onePair, highCard]
     result = [ f c | f <- func ]
     helper mxs = case mxs of
                     Nothing -> False
                     otherwise -> True
-    index = (\(Just x) -> x) (findIndex helper result)
+    index = fromJust (findIndex helper result)
 
 is1Winner :: [Card] -> [Card] -> Bool
 is1Winner c1 c2 = (calScore c1) > (calScore c2)
