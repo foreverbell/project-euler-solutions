@@ -13,10 +13,9 @@ kruskal n g = runST $ do
     let sortedG = sortBy (compare `on` weight) g
     forM_ sortedG $ \(u, v, w) -> do
         eq <- unionSet ufSet u v
-        if (eq) then do
+        when eq $ do
             acc' <- readSTRef acc
             writeSTRef acc (acc' + w)
-        else return ()
     readSTRef acc
     where
         weight (u, v, w) = w

@@ -1,15 +1,20 @@
 
 import qualified Data.Set as S
+import Data.Array
+import Data.Array.ST
+import Control.Monad (forM_)
+import Control.Monad
 
-primesTo m = eratos [2 .. m] where
-    eratos []     = []
-    eratos (p:xs) = p : eratos (xs `minus` [p*p, p*p+p .. m])
-    minus (x:xs) (y:ys) = case (compare x y) of 
-        LT -> x : minus xs (y:ys)
-        EQ -> minus xs ys 
-        GT -> minus (x:xs) ys
-    minus xs _ = xs
-
+primesTo m = map fst $ filter (id . snd) $ assocs $ runSTArray $ do
+    sieve <- newArray (2, m) True
+    let root = (floor . sqrt . fromIntegral) m
+    forM_ [2 .. root] $ \i -> do
+        isPrime <- readArray sieve i
+        when isPrime $ do
+            forM_ [i^2, i^2+i .. m] $ \j -> do
+                writeArray sieve j False
+    return sieve
+        
 primesN = take 500500 $ primesTo (500500 * 15)
 
 modulo = 500500507
@@ -45,5 +50,4 @@ solveIter count items = solveIter (count - 1) items'' where
 solve = solveIter 500500 $ S.fromList (zipWith Item primesN (repeat 0))
 
 main = print solve
-
 

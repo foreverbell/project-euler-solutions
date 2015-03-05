@@ -28,11 +28,9 @@ cyclen = runST $ do
     arr <- newArray (0, bound) 0 :: ST s (STArray s Int Int)
     forM_ [1 .. bound] $ \n -> do
         old <- readArray arr n
-        if (old == 0)
-            then do
-                let res = go amnextArr n S.empty []
-                update arr res
-            else return ()
+        when (old == 0) $ do
+            let res = go amnextArr n S.empty []
+            update arr res
     getElems arr
     where
         go :: Array Int Int -> Int -> S.Set Int -> [Int] -> [Int]

@@ -1,5 +1,5 @@
 
-import Control.Monad (forM_)
+import Control.Monad (forM_, when)
 import Control.Monad.ST
 import Data.Array
 import Data.Array.ST
@@ -22,10 +22,8 @@ solve = runSTArray $ do
                 let sum' = sum + d
                 let count' = count + 1
                 let k' = product' - sum' + count'
-                if (k' <= maxK) 
-                    then do
-                        update ret k' product'
-                        dfs ret count' product' sum' d
-                    else return ()
+                when (k' <= maxK) $ do
+                    update ret k' product'
+                    dfs ret count' product' sum' d
 
 main = print $ (sum . nub . drop 1 . elems) solve

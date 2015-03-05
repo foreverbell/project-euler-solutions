@@ -1,6 +1,6 @@
 
 import Control.Monad.ST
-import Control.Monad (forM_)
+import Control.Monad (forM_, when)
 import Data.Array
 import Data.Array.ST
 
@@ -22,21 +22,17 @@ increase digit x = (take digit x) ++ [(x!!digit) + 1] ++ (drop (digit + 1) x)
 dynamic :: Int -> Array (Int, Int) Int -> Array (Int, Int) Int
 dynamic 0 dp = dp
 dynamic p dp = dynamic (p - 1) $ runSTArray $ do
-    ret <- newArray ((0, 0), (maskBound, 10)) 0 :: ST s (STArray s (Int, Int) Int)
+    ret <- newArray ((0, 0), (maskBound, 10)) 0
     forM_ [0 .. maskBound] $ \mask -> do
         let bits = decode mask
         forM_ [0 .. 10] $ \modulo -> do
             let v = dp!(mask, modulo)
-            if (v /= 0) 
-                then do
-                    forM_ [0 .. 9] $ \digit -> do
-                        if (((bits!!digit) /= 2) && (p /= 20 || digit /= 0))
-                            then do
-                                let mask' = encode (increase digit bits)
-                                let modulo' = (modulo + ((if (even p) then 10 else 1) * digit)) `mod` 11
-                                accumArray ret (mask', modulo') v
-                            else return ()
-                else return ()
+            when (v /= 0) $ do 
+                forM_ [0 .. 9] $ \digit -> do
+                    when (((bits!!digit) /= 2) && (p /= 20 || digit /= 0)) $ do
+                        let mask' = encode (increase digit bits)
+                        let modulo' = (modulo + ((if (even p) then 10 else 1) * digit)) `mod` 11
+                        accumArray ret (mask', modulo') v
     return ret
     where
         accumArray arr idx delta = do

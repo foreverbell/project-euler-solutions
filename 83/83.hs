@@ -50,9 +50,7 @@ dijkstra n s t edges = runST $ do
     writeArray dist s 0
     forM_ [1 .. n] $ \_ -> do
         cur <- extractMin n dist vis
-        if (cur /= (-1))
-            then forM_ (edges!cur) $ \(u, v, w) -> relax dist u v w 
-            else return ()
+        when (cur /= (-1)) $ forM_ (edges!cur) $ \(u, v, w) -> relax dist u v w 
     readArray dist t
     where
         relax dist u v w = do
@@ -67,13 +65,9 @@ dijkstra n s t edges = runST $ do
                 dist' <- readArray dist u
                 temp1 <- readSTRef best
                 temp2 <- readSTRef bestDistance
-                if (not vis') && ((temp1 == (-1)) || (dist' < temp2))
-                    then (writeSTRef best u) >> (writeSTRef bestDistance dist')
-                    else return ()
+                when ((not vis') && ((temp1 == (-1)) || (dist' < temp2))) $ (writeSTRef best u) >> (writeSTRef bestDistance dist')
             ret <- readSTRef best
-            if (ret /= -1)
-                then writeArray vis ret True
-                else return ()
+            when (ret /= -1) $ writeArray vis ret True
             return ret
 
 main = do

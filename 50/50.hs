@@ -1,27 +1,27 @@
+
 import Data.Array
+import Data.Array.ST
+import Control.Monad (forM_, when)
+import Control.Monad.ST
 import Data.List (maximumBy)
 import Data.Function (on)
 
-primesTo m = eratos [2 .. m] where
-    eratos []     = []
-    eratos (p:xs) = p : eratos (xs `minus` [p*p, p*p+p .. m])
+isPrimeTo m = runSTArray $ do
+    sieve <- newArray (2, m) True :: ST s (STArray s Int Bool)
+    let root = (floor . sqrt . fromIntegral) m
+    forM_ [2 .. root] $ \i -> do
+        isPrime <- readArray sieve i
+        when isPrime $ do
+            forM_ [i^2, i^2+i .. m] $ \j -> do
+                writeArray sieve j False
+    return sieve
 
-minus (x:xs) (y:ys) = case (compare x y) of 
-    LT -> x : minus xs (y:ys)
-    EQ -> minus xs ys 
-    GT -> minus (x:xs) ys
-minus xs _ = xs
+primesTo m = map fst $ filter (id . snd) $ assocs $ isPrimeTo m
 
-isPrimeTable = listArray (1,bound) l where
-    bound = 1000000
-    helper n ps
-        | n > bound = []
-        | null ps || p /= n = False : (helper (n + 1) ps)
-        | p == n = True : (helper (n + 1) (tail ps))
-        where p = head ps
-    l = helper 1 (primesTo bound)
-
-isPrime = (!) isPrimeTable
+isPrimeTable = isPrimeTo 1000000
+isPrime 0 = False
+isPrime 1 = False
+isPrime x = isPrimeTable ! x
 
 solve :: [Int] -> (Int, Int)
 solve [] = (0, 0)
