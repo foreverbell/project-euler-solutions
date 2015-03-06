@@ -1,11 +1,11 @@
 
 import qualified Data.Set as S
-import Data.Array
+import Data.Array.Unboxed
 import Data.Array.ST
 import Control.Monad (forM_)
 import Control.Monad
 
-primesTo m = map fst $ filter (id . snd) $ assocs $ runSTArray $ do
+primesTo m = map fst $ filter (id . snd) $ assocs $ runSTUArray $ do
     sieve <- newArray (2, m) True
     let root = (floor . sqrt . fromIntegral) m
     forM_ [2 .. root] $ \i -> do
