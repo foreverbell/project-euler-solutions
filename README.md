@@ -4,7 +4,9 @@
 
 My solutions to Project Euler in some fancy programming languages.
 
-The fancies: Haskell.
+The fancies: 
+
+* Haskell (ghc 7.8.3)
 
 ## License
 
