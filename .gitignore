@@ -2,3 +2,5 @@
 *.hi
 *.o
 *.swp
+*.hp
+*.prof
