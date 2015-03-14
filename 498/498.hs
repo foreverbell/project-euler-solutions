@@ -34,6 +34,4 @@ n = 10^13
 m = 10^12
 d = 10^4
 
-main = print $ (binomial n d modulo) * (binomial (n - d - 1) (m - d - 1) modulo) * sgn `mod` modulo where
-    sgn = if (odd (m - d - 1)) then 1 else (-1)
-
+main = print $ (binomial n d modulo) * (binomial (n - d - 1) (m - d - 1) modulo) `mod` modulo
