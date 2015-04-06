@@ -4,6 +4,8 @@
 
 My solutions to Project Euler in some fancy programming languages.
 
+My project euler handle: [bakusou](https://projecteuler.net/profile/bakusou.png)
+
 The fancies: 
 
 * Haskell (ghc 7.8.3)
