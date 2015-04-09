@@ -1,5 +1,6 @@
 
-import Control.Monad
+import Control.Parallel.Strategies (parMap, rdeepseq, using, Strategy, NFData)
+import Control.Parallel (pseq)
 import Data.Maybe (isJust)
 import Data.List (find)
 
@@ -30,14 +31,13 @@ millerRabin n b = if (p == 1) || (p == n - 1)
         rec 0 p = []
         rec cnt p = p : (rec (cnt - 1) (p * p `mod` n))
 
+testPrime :: Int -> Bool
 testPrime 1 = False
 testPrime 2 = True
 testPrime 3 = True
 testPrime 3215031751 = False
 testPrime n = and $ map (millerRabin n) (takeWhile (< n) b) where
     b = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
-
-generatePrimes xs = map fst $ filter snd $ zip xs (map testPrime xs)
 
 type Mat2 = (Int, Int, Int, Int)
 
@@ -69,7 +69,20 @@ solve n p = ret where
     ret = ((((first mat) - 5) `mod` p) * (inverse 6 p)) `mod` p
     first (a, _, _, _) = a
 
-main = print $ sum $ map (solve (10^15)) primes where
-    primes = generatePrimes [a + 1, a + 3 .. a + b] where
-        a = 10^9
-        b = 10^7
+mapReduce :: (NFData b, NFData c) => Int -> (a -> b) -> ([b] -> c) -> [a] -> c
+mapReduce n mapFunc reduceFunc xs = mapResult `pseq` reduceResult where
+    mapResult = concat $ parMap rdeepseq (map mapFunc) (chunk n xs)
+    reduceResult = reduceFunc mapResult `using` rdeepseq
+    chunk :: Int -> [a] -> [[a]]
+    chunk _ [] = []
+    chunk n xs = as : chunk n bs where (as, bs) = splitAt n xs
+
+chunkSize = 10000
+
+generatePrimes xs = mapReduce chunkSize (\x -> (x, testPrime x)) reduce xs where
+    reduce =  (map fst) . (filter snd)
+
+main = print $ primes `pseq` (mapReduce chunkSize (solve (10^15)) sum primes) where
+    primes = generatePrimes [a + 1, a + 3 .. a + b] :: [Int]
+    a = 10^9
+    b = 10^7
