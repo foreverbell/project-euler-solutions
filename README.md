@@ -4,7 +4,7 @@
 
 My solutions to Project Euler in some fancy programming languages.
 
-My project euler handle: [bakusou](https://projecteuler.net/profile/bakusou.png)
+My project euler handle: [foreverbell](https://projecteuler.net/profile/foreverbell.png)
 
 The fancies: 
 
