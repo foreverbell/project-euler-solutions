@@ -1,9 +1,8 @@
 
+import Common.MapReduce (mapReduce)
 import Control.Monad (guard)
 import Data.Array.Unboxed
 import Text.Printf (printf)
-import Control.Parallel.Strategies (parMap, rdeepseq, using, Strategy, NFData)
-import Control.Parallel (pseq)
 
 countBelow n (x1, y1) (x2, y2) = sum [ count x | x <- [0 .. n] ] where
     count x = (clamp y (-1) n) + 1 where
@@ -29,13 +28,6 @@ countExcludes n p1@(x1, y1) p2@(x2, y2) = if (x1 == x2)
         below = countBelow n p1 p2
         on = countOn n p1 p2 True
         on' = countOn n p1 p2 False
-
-mapReduce :: (NFData b, NFData c) => Int -> (a -> b) -> ([b] -> c) -> [a] -> c
-mapReduce n mapFunc reduceFunc xs = mapResult `pseq` reduceResult where
-    mapResult = concat $ parMap rdeepseq (map mapFunc) (chunk n xs)
-    reduceResult = reduceFunc mapResult `using` rdeepseq
-    chunk _ [] = []
-    chunk n xs = as : chunk n bs where (as, bs) = splitAt n xs
 
 solve :: Int -> Double
 solve n = mapReduce n solve sum pts where

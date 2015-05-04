@@ -1,16 +1,6 @@
 
+import Common.Numbers (inverse')
 import Data.List (foldl')
-
-exgcd :: Int -> Int -> (Int, Int, Int)
-exgcd a 0 = (a, 1, 0)
-exgcd a b = (d, y, x - (a `div` b) * y) where
-    (d, x, y) = exgcd b (a `mod` b)
-
-modularInverse :: Int -> Int -> Int
-modularInverse x m = if d /= 1
-    then undefined
-    else a `mod` m
-    where (d, a, b) = exgcd x m
 
 product' xs p = foldl' helper 1 xs where
     helper accum x = (accum * x) `mod` p
@@ -26,8 +16,8 @@ binomial n m p = if n < m
         n'' = n `mod` p
         m'' = m `mod` p
         a = product' [1 .. n] p
-        b = product' [modularInverse i p | i <- [1 .. m]] p
-        c = product' [modularInverse i p | i <- [1 .. n - m]] p
+        b = product' [inverse' i p | i <- [1 .. m]] p
+        c = product' [inverse' i p | i <- [1 .. n - m]] p
 
 modulo = 999999937
 n = 10^13

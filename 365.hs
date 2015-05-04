@@ -1,4 +1,7 @@
 
+import Common.MapReduce (mapReduce)
+import Common.Primes (primesTo)
+import Common.Numbers (inverse')
 import Data.List (tails)
 import Data.Array.ST
 import Data.Array.Unboxed
@@ -9,32 +12,15 @@ combinations :: Int -> [a] -> [[a]]
 combinations 0 _  = [[]]
 combinations n xs = [y:ys | y:xs' <- tails xs, ys <- combinations (n-1) xs']
 
-primesTo m = eratos [2 .. m] where
-    eratos []     = []
-    eratos (p:xs) = p : eratos (xs `minus` [p*p, p*p+p .. m])
-    minus (x:xs) (y:ys) = case (compare x y) of 
-        LT -> x : minus xs (y:ys)
-        EQ -> minus xs ys 
-        GT -> minus (x:xs) ys
-    minus xs _ = xs
-
-exgcd a 0 = (a, 1, 0)
-exgcd a b = (d, y, x - (a `div` b) * y) where
-    (d, x, y) = exgcd b (a `mod` b)
-
-modularInverse x m = if d /= 1
-    then undefined
-    else a `mod` m
-    where (d, a, b) = exgcd x m
-
+crt3 :: [(Int, Int)] -> Int
 crt3 xs = ((a * m1) + (b * m2) + (c * m3)) `mod` n where
     (p1, m1) = xs!!0
     (p2, m2) = xs!!1
     (p3, m3) = xs!!2
     n = p1 * p2 * p3
-    a = ((modularInverse (p2 * p3) p1) * (p2 * p3)) `mod` n
-    b = ((modularInverse (p1 * p3) p2) * (p1 * p3)) `mod` n
-    c = ((modularInverse (p1 * p2) p3) * (p1 * p2)) `mod` n
+    a = ((inverse' (p2 * p3) p1) * (p2 * p3)) `mod` n
+    b = ((inverse' (p1 * p3) p2) * (p1 * p3)) `mod` n
+    c = ((inverse' (p1 * p2) p3) * (p1 * p2)) `mod` n
 
 factorialInverse p = runSTUArray $ do
     inv <- newListArray (0, p - 1) (take p (1:1:(repeat 0)))
@@ -55,20 +41,22 @@ factorial p = runSTUArray $ do
     return ret
 
 -- Lucas theorem
-binomialCoef p n m = productMod (zipWith (binomialCoef' p) (expand n p) (expand m p)) where
+lucas p n m = productMod (zipWith (lucas' p) (expand n p) (expand m p)) where
     expand 0 p = []
     expand n p = (n `mod` p) : expand (n `div` p) p
     xs = factorial p
     ys = factorialInverse p
-    binomialCoef' p n m = case compare n m of
+    lucas' p n m = case compare n m of
         LT -> 0
         _  -> ((xs!n) * (ys!m) * (ys!(n-m))) `mod` p
     productMod xs = foldl helper 1 xs where
         helper accum x = (accum * x) `mod` p
 
-solve = sum $ map crt3 triples where
+solve = mapReduce 23 solve sum [0 .. (length primes) - 1] where
     primes = dropWhile (<= 1000) $ primesTo 5000
-    binomials = zip primes $ map (\p -> binomialCoef p (10^18) (10^9)) primes
-    triples = combinations 3 binomials
+    binomials = zip primes $ map (\p -> lucas p (10^18) (10^9)) primes
+    solve i = sum $ map (\r -> crt3 (h:r)) rs where
+        h = binomials !! i
+        rs = combinations 2 $ drop (i + 1) binomials
 
 main = print solve
