@@ -6,10 +6,9 @@ import Data.Array.ST
 import Data.Array.IArray ((!), listArray, Array)
 import Control.Monad
 import Control.Monad.ST
+import Common.Util (isqrt)
 
 bound = 1000000
-
-isqrt = floor . sqrt . fromIntegral
 
 amicable n = (succ . sum) $ do
     d <- [ 2 .. (isqrt n) ]

@@ -1,12 +1,18 @@
 module Common.List (
+    nub',
     maximumBy',
     minimumBy'
 ) where
 
 import Data.List (foldl1')
+import qualified Data.Set as S
 
+{-# INLINABLE nub' #-}
 {-# INLINABLE maximumBy' #-}
 {-# INLINABLE minimumBy' #-}
+
+nub' :: (Ord a) => [a] -> [a]
+nub' = S.toList . S.fromList
 
 maximumBy' :: (a -> a -> Ordering) -> [a] -> a
 maximumBy' cmp [] = undefined

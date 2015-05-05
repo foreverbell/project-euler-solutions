@@ -11,5 +11,4 @@ solve input = score
           pairs  = zip names [1 .. ]
           score  = sum $ map (\(n, i) -> (scoreOfName n) * i) pairs
 
-main = interactWithFile "Input/p022_names.txt" solve
-    where interactWithFile path main = readFile path >>= (print . main)
+main = (readFile "Input/p022_names.txt") >>= (print . solve)

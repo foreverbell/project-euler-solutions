@@ -1,5 +1,6 @@
 import qualified Data.Set as S
 import Data.List (sort)
+import Common.List (nub')
 
 {-- analysis:
  - It is equvilant to consider Q_n = n*(3n-1), denote the answer as Q_c/2,
@@ -7,22 +8,11 @@ import Data.List (sort)
  - then we can enumerate the divisor b-a, solve the equations to get a & b, and verify Q_a+Q_b by binary search.
  --}
 
-isPentagonal :: Integer -> Bool
-isPentagonal x = helper 1 (ceiling $ sqrt (fromIntegral x)) where
-    helper l r
-        | l >  r = False
-        | l == r = l * (3 * l - 1) == x
-        | l <  r = case (compare x midValue) of
-                        EQ -> True
-                        LT -> helper l (mid - 1)
-                        GT -> helper (mid + 1) r
-        where mid = (l + r) `div` 2
+isPentagonal :: Integer -> B2
               midValue = mid * (3 * mid - 1)
 
-nub' xs = S.toList $ S.fromList xs
-
 pFactor :: Integer -> [Integer]
-pFactor x = sort $ nub' f where
+pFactor x = nub' f where
     factor x = [ d | d <- [1 .. x], x `mod` d == 0 ]
     f1 = factor x
     f2 = factor (3*x-1)
@@ -35,3 +25,4 @@ checkDiff index = any (\(a,b) -> isPentagonal (a*(3*a-1)+b*(3*b-1))) candidate w
 
 main = print $ n*(3*n-1) `div` 2 where 
     n = head $ dropWhile (not . checkDiff) [1 .. ]
+

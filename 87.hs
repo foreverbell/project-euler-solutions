@@ -1,5 +1,5 @@
-import Data.List (group, sort)
 import Common.Primes (primesTo)
+import Common.List (nub')
 
 limit = 50000000
 primes = primesTo 7072
@@ -11,6 +11,4 @@ numbers = do
     z <- takeWhile (\n -> x^2+y^3+n^4 <= limit) primes
     return (x^2+y^3+z^4)
 
-nubLength = length . group . sort
-
-main = print $ nubLength numbers
+main = print $ length $ nub' numbers
