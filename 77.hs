@@ -1,14 +1,6 @@
 import Data.List (findIndex)
 import Data.Maybe (fromJust)
-
-primesTo m = eratos [2 .. m]  where
-    eratos []     = []
-    eratos (p:xs) = p : eratos (xs `minus` [p*p, p*p+p .. m])
-    minus (x:xs) (y:ys) = case (compare x y) of 
-        LT -> x : minus xs (y:ys)
-        EQ -> minus xs ys 
-        GT -> minus (x:xs) ys
-    minus xs _ = xs
+import Common.Primes (primesTo)
 
 primes = primesTo 100
 primesN = length primes

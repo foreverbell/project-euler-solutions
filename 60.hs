@@ -1,27 +1,12 @@
 import Data.Array
-
-primesTo m = eratos [2 .. m] where
-    eratos []     = []
-    eratos (p:xs) = p : eratos (xs `minus` [p*p, p*p+p .. m])
-    minus (x:xs) (y:ys) = case (compare x y) of 
-        LT -> x : minus xs (y:ys)
-        EQ -> minus xs ys 
-        GT -> minus (x:xs) ys
-    minus xs _ = xs
-
-isPrime :: Int -> [Int] -> Bool
-isPrime x [] = True
-isPrime x (p:ps)
-    | x < p * p = True
-    | x `mod` p == 0 = False
-    | otherwise = isPrime x ps
+import Common.Primes (primesTo, testPrime)
 
 primeList = primesTo 9999 :: [Int]
 primeArray = listArray (0, (length primeList) - 1) primeList
 
 canCatArray = listArray (0, (length primeList) - 1) [ catArray (fst p) (snd p) | p <- (zip primeList [0 .. ]) ] where
     catNumber x y = read ((show x) ++ (show y)) :: Int
-    check x y = (isPrime (catNumber x y) primeList) && (isPrime (catNumber y x) primeList)
+    check x y = (testPrime (catNumber x y)) && (testPrime (catNumber y x))
     catArray x index = listArray (0, index - 1) [ check x y | y <- take index primeList ]
 
 dfs :: Int -> [Int] -> Int -> Int  -- cur, (p:ps), size, result

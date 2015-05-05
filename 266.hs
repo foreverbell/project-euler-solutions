@@ -1,4 +1,5 @@
 
+import Common.Primes (primesTo)
 import Data.List (sort)
 import Control.Monad (filterM)
 
@@ -7,17 +8,8 @@ product1 xs = product xs
 
 powerset xs = filterM (const [True, False]) xs
 
-primesTo m = eratos [2 .. m] where
-    eratos []     = []
-    eratos (p:xs) = p : eratos (xs `minus` [p*p, p*p+p .. m])
-    minus (x:xs) (y:ys) = case (compare x y) of 
-        LT -> x : minus xs (y:ys)
-        EQ -> minus xs ys 
-        GT -> minus (x:xs) ys
-    minus xs _ = xs
-
 primes :: [Integer]
-primes = primesTo 190
+primes = map toInteger $ primesTo 190
 
 n = product primes
 

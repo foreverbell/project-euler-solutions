@@ -1,15 +1,4 @@
-
-primesTo m = eratos [2 .. m]  where
-    eratos []     = []
-    eratos (p:xs) = p : eratos (xs `minus` [p*p, p*p+p .. m])
-    minus (x:xs) (y:ys) = case (compare x y) of 
-        LT -> x : minus xs (y:ys)
-        EQ -> minus xs ys 
-        GT -> minus (x:xs) ys
-    minus xs _ = xs
-
-primeTable = take 14 $ primesTo 100 -- 3**14 > 4000000
-upperBound = (toInteger . round) (10 ** 100)
+import Common.Primes (primes)
 
 dfs :: [Int] -> Int -> Int -> Integer -> Integer -> Integer
 dfs (p:ps) t total num best 
@@ -22,5 +11,7 @@ dfs [] t total num best = case compare total 8000000 of
     GT -> min best num
     _  -> best
 
-main = print $ dfs primeTable 20 1 1 upperBound
+main = print $ dfs primeTable 20 1 1 upperBound where
+    primeTable = take 14 $ primes -- 3**14 > 3999999
+    upperBound = 10^100
 

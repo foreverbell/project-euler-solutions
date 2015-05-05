@@ -1,13 +1,14 @@
 
-import Data.Array
+import Data.Array.Unboxed
 import Data.Array.ST
 import Control.Monad (forM_)
 import Control.Monad
+import Common.Util (isqrt)
 
-primesTo :: Int -> Array Int Bool
-primesTo m = runSTArray $ do
+primesTo :: Int -> UArray Int Bool
+primesTo m = runSTUArray $ do
     sieve <- newArray (2, m) True
-    let root = (floor . sqrt . fromIntegral) m
+    let root = isqrt m
     forM_ [2 .. root] $ \i -> do
         isPrime <- readArray sieve i
         when isPrime $ do
@@ -23,7 +24,7 @@ solve = solveIter primeList 0 where
     solveIter (p:ps) sum = solveIter ps sum' where
         sum' = sum + delta
         k = p - 1
-        root = floor $ sqrt $ fromIntegral k
+        root = isqrt k
         wanted = and $ do
             d <- [1 .. root]
             guard ((k `mod` d) == 0)

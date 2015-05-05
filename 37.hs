@@ -1,19 +1,14 @@
 import Data.List
+import Common.Primes (testPrime)
 
-isPrime :: Integer -> Bool
-isPrime x
-    | x <= 0    = False
-    | x == 1    = False
-    | otherwise = all (\y -> x `mod` y /= 0) [2 .. (floor $ sqrt $ fromIntegral x)]
+checkFromLeft :: Int -> Bool
+checkFromLeft x = all testPrime $ map read $ init (tails (show x))
 
-checkFromLeft :: Integer -> Bool
-checkFromLeft x = all isPrime $ map read $ init (tails (show x))
+dfs :: Int -> [Int]
+dfs x = if testPrime x
+    then (x : (foldl (\s y -> s ++ (dfs (x * 10 + y))) [] [1,3,7,9]))
+    else []
 
-dfs :: Integer -> [Integer]
-dfs x
-    | isPrime x = (x : (foldl (\s y -> s ++ (dfs (x * 10 + y))) [] [1,3,7,9]))
-    | otherwise = []
-
-main = print $ (sum magic) - (2 + 3 + 5 + 7)
-    where candidate = (dfs 2) ++ (dfs 3) ++ (dfs 5) ++ (dfs 7)
-          magic = filter checkFromLeft candidate
+main = print $ (sum magic) - (2 + 3 + 5 + 7) where 
+    candidate = (dfs 2) ++ (dfs 3) ++ (dfs 5) ++ (dfs 7)
+    magic = filter checkFromLeft candidate

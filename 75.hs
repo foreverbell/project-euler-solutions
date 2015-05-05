@@ -1,7 +1,7 @@
 
 import Data.Array.MArray
 import Data.Array.IO
-import Control.Monad (foldM)
+import Control.Monad (foldM, mapM_)
 
 type IntArray = IOArray Int Int
 
@@ -20,8 +20,7 @@ update m n arr = do
     let c = m^2 + n^2
     let p = a + b + c
     let xs = takeWhile (\x -> x <= limit) [p, p + p .. ]
-    mapM (\x -> incArray arr x) xs
-    return ()
+    mapM_ (\x -> incArray arr x) xs
 
 main = do
     arr <- newArray (0, limit) 0 :: IO IntArray

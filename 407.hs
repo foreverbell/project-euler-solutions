@@ -4,6 +4,7 @@ import Data.Array
 import Data.Array.ST
 import Control.Monad (forM_, liftM, filterM, when)
 import Control.Monad.ST
+import Common.Numbers (inverse')
 
 data SieveItem = SieveItem {
     isP :: Bool,
@@ -30,17 +31,6 @@ eratos n = runSTArray $ do
                     writeArray sieve j $ SieveItem False i jExp
     return sieve 
 
-exgcd :: Int -> Int -> (Int, Int, Int)
-exgcd a 0 = (a, 1, 0)
-exgcd a b = (d, y, x - (a `div` b) * y) where
-    (d, x, y) = exgcd b (a `mod` b)
-
-modularInverse :: Int -> Int -> Int
-modularInverse x m = if d /= 1
-    then undefined
-    else a `mod` m
-    where (d, a, b) = exgcd x m
-
 maxIdempotent 1 = 0
 maxIdempotent n = maximum idempotents
     where
@@ -48,7 +38,7 @@ maxIdempotent n = maximum idempotents
         factorize n = p : (factorize (n `div` p)) where p = (minP (sieve!n)) ^ (minPExp (sieve!n))
         primitiveFactors = factorize n
         factors = map product (properPowerset primitiveFactors)
-        idempotents = 1 : [ inv * p | p <- factors, let q = n `div` p, let inv = modularInverse p q ]
+        idempotents = 1 : [ inv * p | p <- factors, let q = n `div` p, let inv = inverse' p q ]
         powerset xs = filterM (const [True, False]) xs
         properPowerset [] = []
         properPowerset (x:[]) = []

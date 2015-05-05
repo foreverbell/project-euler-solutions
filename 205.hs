@@ -5,8 +5,6 @@ import Control.Monad (guard, forM_, when)
 import Control.Monad.ST
 import Text.Printf
 
-convert = undefined
-
 dynamic :: Int -> Int -> [(Int, Int)]
 dynamic times dice = assocs $ rec times dice init where
     cnt = times * dice
