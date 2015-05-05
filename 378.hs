@@ -1,27 +1,10 @@
 
-import Control.Monad (forM_, mapM, liftM, liftM2, when)
-import Data.Array.Base (unsafeRead, unsafeWrite)
+import Control.Monad (forM_, when)
 import Data.Array.Unboxed
 import Data.Array.ST
 import Control.Monad.ST
 import Data.List (zipWith4, foldl')
-import Data.Bits 
-
-askSum :: (Ix i, Bits i, Num i, Num e, MArray a e m) => (e -> e -> e) -> a i e -> Int -> m e
-askSum f fenwick 0 = return 0
-askSum f fenwick x = liftM (foldl' f 0) $ mapM (unsafeRead fenwick) xs where
-    xs = takeWhile (> 0) $ x : map (\x -> x - (x .&. (-x))) xs
-
-askSumLR :: (Ix i, Bits i, Num i, Num e, MArray a e m) => (e -> e -> e) -> a i e -> Int -> Int -> m e
-askSumLR f fenwick l r = if (l <= r)
-    then liftM2 f (askSum f fenwick r) (liftM negate (askSum f fenwick (l - 1)))
-    else return 0
-
-modify :: (Ix i, Bits i, Num i, Num e, MArray a e m) => (e -> e -> e) -> a i e -> Int -> Int -> e -> m ()
-modify f fenwick n x d = forM_ xs $ \i -> do 
-    v' <- unsafeRead fenwick i
-    unsafeWrite fenwick i (f v' d) where
-        xs = takeWhile (<= n) $ x : map (\x -> x + (x .&. (-x))) xs
+import qualified Common.Fenwick as F
 
 m = 10^18
 foldMod a b = (a + b) `mod` m
@@ -75,9 +58,9 @@ solve n = result where
         dp3 <- newArray (0, maxd) 0 :: ST s (STUArray s Int Int)
         forM_ [1 .. n] $ \i -> do
             let d = dT!i
-            modify foldMod dp1 maxd d 1
-            (askSumLR foldMod dp1 (d + 1) maxd) >>= (modify foldMod dp2 maxd d)
-            (askSumLR foldMod dp2 (d + 1) maxd) >>= (modify foldMod dp3 maxd d)
-        askSum foldMod dp3 maxd
+            F.modify foldMod dp1 maxd d 1
+            (F.askLR foldMod dp1 (d + 1) maxd) >>= (F.modify foldMod dp2 maxd d)
+            (F.askLR foldMod dp2 (d + 1) maxd) >>= (F.modify foldMod dp3 maxd d)
+        F.ask foldMod dp3 maxd
 
 main = print $ solve 60000000
