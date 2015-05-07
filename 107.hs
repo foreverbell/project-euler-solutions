@@ -1,43 +1,22 @@
 import Data.Array.ST
 import Control.Monad
 import Control.Monad.ST
-import Data.STRef
+import qualified Common.Ref as R
+import qualified Common.UnionFind as UF
 import Data.List (sortBy)
 import Data.Function (on)
 
 kruskal :: Int -> [(Int, Int, Int)] -> Int
 kruskal n g = runST $ do
-    acc <- newSTRef 0
-    ufSet <- newArray (0, n - 1) 0 :: ST s (STArray s Int Int)
-    initSet ufSet n
+    acc <- R.new 0
+    ufs <- UF.make (0, n - 1) :: ST s (UF.UFSet (STUArray s) (ST s))
     let sortedG = sortBy (compare `on` weight) g
     forM_ sortedG $ \(u, v, w) -> do
-        eq <- unionSet ufSet u v
-        when eq $ do
-            acc' <- readSTRef acc
-            writeSTRef acc (acc' + w)
-    readSTRef acc
-    where
-        weight (u, v, w) = w
-        initSet ufSet n = do
-            forM_ [0 .. n - 1] $ \i -> do
-            writeArray ufSet i i
-        findSet ufSet u = do
-            v <- readArray ufSet u
-            if (u == v) 
-                then return u 
-                else do
-                    v' <- findSet ufSet v
-                    writeArray ufSet u v'
-                    return v'
-        unionSet ufSet u v = do
-            u' <- findSet ufSet u
-            v' <- findSet ufSet v
-            if (u' == v')
-                then return False
-                else do
-                    writeArray ufSet u' v'
-                    return True
+        merged <- UF.union ufs u v
+        when merged $ do
+            R.modify acc ((+) w)
+    R.read acc
+    where weight (u, v, w) = w
 
 comma :: String -> [String]
 comma [] = []
