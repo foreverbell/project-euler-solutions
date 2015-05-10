@@ -4,7 +4,7 @@
 
 My solutions to Project Euler in some fancy programming languages.
 
-My project euler handle: [foreverbell](https://projecteuler.net/profile/foreverbell.png)
+My project euler handle: [foreverbell](https://projecteuler.net/profile/foreverbell.png), friend key: 658700_e467bf8d1b99d40348ddabe8736a5ce2.
 
 The fancies: 
 
