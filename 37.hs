@@ -1,14 +1,11 @@
-import Data.List
+import Data.List (all)
 import Common.Primes (testPrime)
 
-checkFromLeft :: Int -> Bool
-checkFromLeft x = all testPrime $ map read $ init (tails (show x))
+main = print $ ret - (2 + 3 + 5 + 7) where 
+    ret = sum $ filter check $ concat $ map get [2, 3, 5, 7]
+    check x = (testPrime x) && (all testPrime (takeWhile (< x) (map (\d -> x `mod` d) ds))) where
+        ds = 10 : map (* 10) ds
+    get x = if testPrime x
+        then x : concat (map (\y -> get (x * 10 + y)) [1, 3, 7, 9])
+        else []
 
-dfs :: Int -> [Int]
-dfs x = if testPrime x
-    then (x : (foldl (\s y -> s ++ (dfs (x * 10 + y))) [] [1,3,7,9]))
-    else []
-
-main = print $ (sum magic) - (2 + 3 + 5 + 7) where 
-    candidate = (dfs 2) ++ (dfs 3) ++ (dfs 5) ++ (dfs 7)
-    magic = filter checkFromLeft candidate

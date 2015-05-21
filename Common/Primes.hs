@@ -10,6 +10,7 @@ import Data.Array.Unboxed
 import Data.Array.ST
 import Data.Maybe (isJust)
 import Data.List (find)
+import Data.Bits (shiftR, (.&.))
 import Common.Numbers (powMod)
 import Common.Util (isqrt)
 
@@ -42,10 +43,10 @@ primes10k = primesTo 10000
 millerRabinTest :: Int -> Int -> Bool
 millerRabinTest n b = if (p == 1) || (p == n - 1) || (n == b)
     then True
-    else (n `mod` b /= 0) && (rec cnt p) where
-        tail0 x cnt = if odd x 
+    else (n `rem` b /= 0) && (rec cnt p) where
+        tail0 x cnt = if (x .&. 1) == 1 
             then (x, cnt)
-            else tail0 (x `div` 2) (cnt + 1)
+            else tail0 (x `shiftR` 1) (cnt + 1)
         (m, cnt) = tail0 (n - 1) 0
         p = if (n < 2^31)
             then powMod b m n
@@ -55,11 +56,11 @@ millerRabinTest n b = if (p == 1) || (p == n - 1) || (n == b)
             then True
             else rec (cnt - 1) p2 where
                 p2 = if (p < 2^31)
-                    then p^2 `mod` n
-                    else fromIntegral $ (toInteger p)^2 `mod` (toInteger n)
+                    then p^2 `rem` n
+                    else fromIntegral $ (toInteger p)^2 `rem` (toInteger n)
 
 naiveTest :: Int -> Bool
-naiveTest n = all (\d -> n `mod` d /= 0) $ takeWhile (<= root) primes10k where
+naiveTest n = all (\d -> n `rem` d /= 0) $ takeWhile (<= root) primes10k where
     root = isqrt n
 
 testPrime :: Int -> Bool
