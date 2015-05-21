@@ -1,4 +1,6 @@
 module Common.Numbers (
+    factorial,
+    binomial,
     powMod,
     exgcd,
     inverse,
@@ -7,10 +9,19 @@ module Common.Numbers (
 
 import Data.Bits (Bits, (.&.), shiftR)
 
+{-# INLINABLE binomial #-}
 {-# INLINABLE powMod #-}
 {-# INLINABLE exgcd #-}
 {-# INLINABLE inverse #-}
 {-# INLINABLE inverse' #-}
+
+factorial :: (Integral a) => a -> a
+factorial n = product [1 .. n]
+
+binomial :: (Integral a) => a -> a -> a
+binomial a b = if a < b
+    then 0
+    else (product [b + 1 .. a]) `quot` (product [1 .. (a - b)]) 
 
 powMod :: (Integral a, Bits b, Integral b) => a -> b -> a -> a
 powMod a p m = helper a p m 1 where
