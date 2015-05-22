@@ -25,7 +25,7 @@ bigPhi m = if m <= n'
             f = (m `rem` modulo) * ((m - 1) `rem` modulo) `quot` 2 `rem` modulo
             root = isqrt m
             r1 = foldl' (<+>) 0 $ map helper [1 .. root] where
-                helper r = (bigPhi r) * (m `quot` r - m `quot` (r + 1)) `mod` modulo
+                helper r = (bigPhi r) * (m `quot` r - m `quot` (r + 1)) `rem` modulo
             r2 = foldl' (<+>) 0 $ map helper [2 .. m `quot` (root + 1)] where
                 helper d = bigPhi (m `quot` d)
 

@@ -9,6 +9,7 @@ module Common.Numbers (
 
 import Data.Bits (Bits, (.&.), shiftR)
 
+{-# INLINABLE factorial #-}
 {-# INLINABLE binomial #-}
 {-# INLINABLE powMod #-}
 {-# INLINABLE exgcd #-}
