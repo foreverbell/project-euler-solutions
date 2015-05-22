@@ -1,19 +1,11 @@
-import Data.List
-import Data.Char
+import Data.List (unfoldr, reverse)
+import Data.Char (chr, ord)
 
 decToBin :: Int -> String
 decToBin x = reverse $ unfoldr helper x where
-    helper x
-        | x == 0 = Nothing
-        | otherwise = Just (chr ((ord '0') + (x `mod` 2)), x `div` 2)
+    helper 0 = Nothing
+    helper x = Just (chr ((ord '0') + (x `mod` 2)), x `div` 2)
 
-isPalindrome :: Eq a => [a] -> Bool
-isPalindrome [] = True
-isPalindrome [a] = True
-isPalindrome (x:xs)
-    | x == y = isPalindrome $ init xs
-    | otherwise = False
-    where y = last xs
+palindromic xs = xs == reverse xs
 
-main = print $ sum candidate where
-    candidate = [ x | x <- [1 .. 999999], isPalindrome $ show x, isPalindrome $ decToBin x ]
+main = print $ sum $ [ x | x <- [1 .. 999999], palindromic (show x), palindromic (decToBin x) ]

@@ -1,10 +1,13 @@
 import Data.List (sort)
+import Control.Monad (guard)
 
 concatProduct :: Int -> String
-concatProduct number = helper 1 number [] where
-    helper dep number result
-        | length result >= 9 = result
-        | otherwise          = helper (dep + 1) number (result ++ (show $ dep * number))
+concatProduct n = head $ dropWhile (\s -> (length s) < 9) prefix where
+    prefix :: [String]
+    prefix = [] : zipWith (++) prefix [ show (n * i) | i <- [1 .. 9] ]
 
-main = print $ maximum magic where
-    magic = [ read y :: Int | x <- [1 .. 9999], let y = concatProduct x, sort y == ['1'..'9'] ] 
+main = print $ maximum $ do
+    x <- [1 .. 9999]
+    let y = concatProduct x
+    guard $ sort y == ['1' .. '9']
+    return ((read y) :: Int)

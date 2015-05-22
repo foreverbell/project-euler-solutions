@@ -1,3 +1,5 @@
+import Common.Util (if')
+
 input = [	
 	[ 8,  2, 22, 97, 38, 15,  0, 40,  0, 75,  4,  5,  7, 78, 52, 12, 50, 77, 91,  8],
 	[49, 49, 99, 40, 17, 81, 18, 57, 60, 87, 17, 40, 98, 43, 69, 48,  4, 56, 62,  0],
@@ -20,13 +22,10 @@ input = [
 	[20, 73, 35, 29, 78, 31, 90,  1, 74, 31, 49, 71, 48, 86, 81, 16, 23, 57,  5, 54],
 	[ 1, 70, 54, 71, 83, 51, 54, 69, 16, 92, 33, 48, 61, 43, 52,  1, 89, 19, 67, 48] ] :: [[Int]]
 
-go d step v@(x, y)
-    | onBoard v = (input!!x)!!y * next
-    | otherwise = 0
-    where
-        plus (a, b) (c, d) = (a + c, b + d)
-        dirs = [(-1, 0), (0, -1), (-1, -1), (-1, 1)]
-        next = if (step == 0) then 1 else go d (step - 1) (v `plus` (dirs!!d))
-        onBoard (x, y) = (x `elem` [0 .. 19]) && (y `elem` [0 .. 19])
+go d step v@(x, y) = if' (onBoard v) ((input!!x)!!y * next) 0 where
+    plus (a, b) (c, d) = (a + c, b + d)
+    dirs = [(-1, 0), (0, -1), (-1, -1), (-1, 1)]
+    next = if' (step == 0) 1 $ go d (step - 1) (v `plus` (dirs!!d))
+    onBoard (x, y) = (x `elem` [0 .. 19]) && (y `elem` [0 .. 19])
 
 main = print $ maximum [go d 3 (x,y) | d <- [0 .. 3], x <- [0 .. 19], y <- [0 .. 19]]

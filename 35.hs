@@ -1,22 +1,14 @@
-import Data.List
 import Common.Primes (testPrime)
-
-rotate (x:xs) = xs ++ [x]
+import Common.List (rotate, nub')
+import Control.Monad (foldM)
 
 rotateNumber :: Int -> [Int]
-rotateNumber x = map read strings where
-    sx = show x
-    strings = (sx : (unfoldr helper (rotate sx))) where 
-        helper s = if s == sx
-            then Nothing
-            else Just (s, rotate s)
+rotateNumber x = nub' $ map (\y -> read (rotate y s)) [1 .. length s] where
+    s = show x
 
-generate :: Int -> Int -> [Int]
-generate 0 x = [x]
-generate dep x = (x : (concatMap ((generate (dep - 1)) . ((+) (x * 10))) [1, 3, 7, 9]))
-
-main = print $ length magic where
-    magic = sort $ (2 : 5 : (filter helper candidate))
-    helper x = all (\y -> y `elem` candidate) (rotateNumber x)
-    candidate = filter testPrime (tail $ generate 6 0)
+main = print $ length result where
+    primes = filter testPrime $ nub' $ foldM helper 0 $ replicate 6 [1, 3, 7, 9] where
+        helper a xs = a : map (\x -> a * 10 + x) xs
+    result = 2 : 5 : filter helper primes where
+        helper x = all (\y -> y `elem` primes) (rotateNumber x)
 

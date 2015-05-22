@@ -1,6 +1,2 @@
-main = print (foldr acc 0 fib) where 
+main = print $ sum $ filter even $ takeWhile (<= 4000000) fib where
     fib = 1 : 2 : zipWith (+) fib (tail fib)
-    acc x sum
-        | x > 4000000 = 0
-        | even x = sum + x
-        | otherwise = sum
