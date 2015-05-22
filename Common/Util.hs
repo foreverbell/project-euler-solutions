@@ -1,10 +1,16 @@
 module Common.Util (
+    if',
     isqrt,
     submasks,
     combmasks
 ) where
 
 import Data.Bits
+
+if' :: Bool -> t -> t -> t
+if' p a b = if p 
+    then a 
+    else b
 
 isqrt :: Int -> Int
 isqrt = floor . sqrt . fromIntegral

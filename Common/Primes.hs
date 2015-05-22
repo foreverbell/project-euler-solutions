@@ -2,7 +2,8 @@ module Common.Primes (
     primes,
     primes',
     primesTo, 
-    testPrime
+    testPrime,
+    countPrimeApprox
 ) where
 
 import Control.Monad (forM_, when)
@@ -75,3 +76,17 @@ testPrime n = if (n <= 0)
         else naiveTest n 
     where 
         b = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
+
+-- never underestimated for n <= 10^12
+countPrimeApprox :: Int -> Int
+countPrimeApprox = truncate . appi . fromIntegral where
+    appi x = y - y / 300000 + 7 * l' where
+        y = x * l * (1 + l * (1 + l * h))
+        w = log x
+        l = 1 / w
+        l' = log w
+        h | x < 10000000  = 2.5625
+          | x < 50000000  = 2.5
+          | x < 120000000 = 617 / 256
+          | x > 10**12    = undefined
+          | otherwise     = 2.0625 + l * (3 + l' * l * (13.25 + l' * l * 57.75))
