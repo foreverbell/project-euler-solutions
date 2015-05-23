@@ -2,10 +2,6 @@
 import Common.Primes (primesTo)
 import Common.Numbers (powMod)
 import qualified Data.Set as S
-import Data.Array.Unboxed
-import Data.Array.ST
-import Control.Monad (forM_)
-import Control.Monad
 
 primesN = take 500500 $ primesTo (500500 * 15)
 
@@ -24,7 +20,7 @@ instance Ord Item where
 
 solveIter :: Int -> S.Set Item -> Int
 solveIter 0 items = foldl helper 1 (S.toList items) where
-    helper accum item = accum * (powMod (base item) (2 ^ (expLog2 item) - 1) modulo) `mod` modulo
+    helper accum item = accum * (powMod (base item) ((2 ^ (expLog2 item) - 1) :: Integer) modulo) `mod` modulo
 solveIter count items = solveIter (count - 1) items'' where
     minItem = S.findMin items
     items' = S.deleteMin items

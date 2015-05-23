@@ -8,7 +8,16 @@ import Common.List (nub')
  - then we can enumerate the divisor b-a, solve the equations to get a & b, and verify Q_a+Q_b by binary search.
  --}
 
-isPentagonal :: Integer -> B2
+isPentagonal :: Integer -> Bool
+isPentagonal x = helper 1 (ceiling $ sqrt (fromIntegral x)) where
+    helper l r
+        | l >  r = False
+        | l == r = l * (3 * l - 1) == x
+        | l <  r = case (compare x midValue) of
+                        EQ -> True
+                        LT -> helper l (mid - 1)
+                        GT -> helper (mid + 1) r
+        where mid = (l + r) `div` 2
               midValue = mid * (3 * mid - 1)
 
 pFactor :: Integer -> [Integer]
