@@ -1,15 +1,16 @@
 
 import Data.List ((\\))
 import Data.Char (digitToInt)
+import Common.Util (isqrt)
 
+go :: Integer -> Int
 go number = sumOfDigit100 decimial where
-    isqrt = floor . sqrt . fromIntegral
     root = isqrt number
     target = number * 10^200
     bsearch :: Integer -> Integer -> Integer
-    bsearch l r
-        | l == r = l
-        | otherwise = case compare (mid*mid) target of
+    bsearch l r = if l == r
+        then l
+        else case compare (mid*mid) target of
             EQ -> mid
             LT -> bsearch mid r
             GT -> bsearch l (mid - 1)

@@ -1,14 +1,12 @@
 import Data.Ratio
 import Data.List (sort, nub, maximumBy)
 import Data.Function (on)
+import Common.Util (if')
 
 ratio2Integer :: (Ratio Integer) -> Integer
-ratio2Integer r 
-    | a `mod` b == 0 = a `div` b
-    | otherwise = -1 
-    where
-        a = numerator r
-        b = denominator r
+ratio2Integer r = if' (a `mod` b == 0) (a `div` b) (-1) where
+    a = numerator r
+    b = denominator r
 
 solve :: [Integer] -> Integer
 solve xs = getConsecutive $ concat [ dfs (kill n rs) (Just (rs !! n)) | n <- [0 .. 3] ] where

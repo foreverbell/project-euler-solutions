@@ -1,8 +1,6 @@
 
 isPalindrome :: Eq a => [a] -> Bool
-isPalindrome [] = True
-isPalindrome [a] = True
-isPalindrome (x:xs) = if x == last xs then isPalindrome (init xs) else False
+isPalindrome xs = xs == (reverse xs)
 
 isLychrel :: Integer -> Bool
 isLychrel x = helper 1 x where

@@ -1,5 +1,5 @@
 
-import Data.Graph
+import Data.Graph (topSort, buildG)
 import Data.List
 import Data.Char (digitToInt)
 
@@ -13,4 +13,3 @@ solve logs' = intersect (concatMap show result) (concat logs') where
     result = topSort g
 
 main = (readFile "Input/p079_keylog.txt") >>= (putStrLn . solve . lines)
-    

@@ -1,7 +1,7 @@
 import Data.List (maximumBy)
 import Data.Function (on)
+import Common.Util (isqrt)
 
-isqrt = floor . sqrt . fromIntegral
 isSquared x = (isqrt x) ^ 2 == x
 
 diophantine d = filter (\(x,y) -> x^2-d*y^2 == 1) convergent where

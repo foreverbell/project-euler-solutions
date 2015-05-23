@@ -1,4 +1,5 @@
 import qualified Data.Map as M
+import Common.Util (isqrt)
 
 period :: Int -> Int -> Int -> Int -> Int -> M.Map (Int, Int) Int -> Int
 period n root a b index map = 
@@ -9,8 +10,6 @@ period n root a b index map =
                 a' = (n - b * b) `div` a
                 x = (root + b) `div` a'
                 b' = x * a' - b
-
-isqrt x = floor $ sqrt $ fromIntegral x
 
 findPeriod n = period n root 1 root 0 M.empty where
     root = isqrt n

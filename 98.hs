@@ -2,6 +2,7 @@ import Data.List (groupBy, sort)
 import Data.Char (ord)
 import Control.Monad (guard)
 import Data.Array.IArray
+import Common.Util (isqrt)
 
 readInput :: IO [String]
 readInput = (readFile "Input/p098_words.txt") >>= (return . foo) where 
@@ -12,7 +13,6 @@ squares :: [Int]
 squares = [ n*n | n <- [1 .. ] ]
 
 isSquared x = (root * root) == x where 
-    isqrt = floor . sqrt . fromIntegral
     root = isqrt x
 
 anagram word1 word2 = (sort word1) == (sort word2)
@@ -54,4 +54,4 @@ solve s = maximum $ do
         n = length s
         arr = listArray (1, n) s :: Array Int String
 
-main = readInput >>= (return . solve)
+main = readInput >>= (print . solve)

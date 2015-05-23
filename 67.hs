@@ -3,9 +3,8 @@ fromString :: [[String]] -> [[Int]]
 fromString s = map (\x -> map (\y -> read y) x) s
 
 dp :: Int -> [[Int]] -> [Int]
-dp level triangle
-    | level == 0 = row
-    | otherwise  = zipWith (+) row (zipWith max (0 : bak) (bak ++ [0]))
+dp 0 triangle = head triangle
+dp level triangle = zipWith (+) row (zipWith max (0 : bak) (bak ++ [0]))
     where row = head triangle 
           bak = dp (level - 1) (tail triangle)
       

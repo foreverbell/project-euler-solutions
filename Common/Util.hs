@@ -7,12 +7,15 @@ module Common.Util (
 
 import Data.Bits
 
+{-# INLINABLE if' #-}
+{-# INLINABLE isqrt #-}
+
 if' :: Bool -> t -> t -> t
 if' p a b = if p 
     then a 
     else b
 
-isqrt :: Int -> Int
+isqrt :: (Integral a) => a -> a
 isqrt = floor . sqrt . fromIntegral
 
 submasks :: Int -> [Int]

@@ -1,5 +1,6 @@
 
-isqrt = floor . sqrt . fromIntegral
+import Common.Util (isqrt)
+
 isSquared x = root * root == x where 
     root = isqrt x
 

@@ -2,11 +2,11 @@
 import Data.Array.MArray
 import Data.Array.IO
 import Control.Monad (foldM, mapM_)
+import Common.Util (isqrt, if')
 
 type IntArray = IOArray Int Int
 
 limit = 1500000 :: Int
-isqrt = floor . sqrt . fromIntegral
 limit' = isqrt $ limit `div` 2
 candidate = [ (m, n) | m <- [1 .. limit'], n <- [1 .. m - 1], gcd m n == 1, odd (m + n) ]
 
@@ -25,11 +25,8 @@ update m n arr = do
 main = do
     arr <- newArray (0, limit) 0 :: IO IntArray
     mapM (\(m ,n) -> update m n arr) candidate
-    (foldM helper (0,arr) [0 .. limit]) >>= (print . fst)
-    where
-        helper (s, arr) index = do
+    (foldM helper (0, arr) [0 .. limit]) >>= (print . fst) 
+    where helper (s, arr) index = do
             val <- readArray arr index
-            case compare val 1 of
-                EQ -> return (s + 1, arr)
-                _  -> return (s, arr)
+            return $ if' (val == 1) (s + 1, arr) (s, arr)
 

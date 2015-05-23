@@ -36,3 +36,4 @@ getCase2 (x, y) = if ((2 * x - 1) `mod` 3 == 0) && ((b * h) `mod` 2 == 0)
 main = print $ sum $ filter (\x -> x >= 3 && x <= 10^9) perimeter where
     candidate = takeWhile ((<= 10^9) . fst) $ diophantine 3
     perimeter = [ getCase1 p | p <- candidate ] ++ [ getCase2 p | p <- candidate ]
+

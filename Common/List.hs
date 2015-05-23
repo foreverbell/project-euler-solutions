@@ -3,19 +3,25 @@ module Common.List (
     minus,
     intersect,
     nub',
+    unique,
     maximumBy',
-    minimumBy'
+    minimumBy',
+    maximum',
+    minimum'
 ) where
 
-import Data.List (foldl1')
+import Data.List (foldl1', group)
 import qualified Data.Set as S
 
 {-# INLINABLE rotate #-}
 {-# INLINABLE minus #-}
 {-# INLINABLE intersect #-}
 {-# INLINABLE nub' #-}
+{-# INLINABLE unique #-}
 {-# INLINABLE maximumBy' #-}
 {-# INLINABLE minimumBy' #-}
+{-# INLINABLE maximum' #-}
+{-# INLINABLE minimum' #-}
 
 rotate :: Int -> [a] -> [a]
 rotate n xs = take (length xs) (drop n (cycle xs))
@@ -41,6 +47,10 @@ intersect xs'@(x:xs) ys'@(y:ys) = case (compare x y) of
 nub' :: (Ord a) => [a] -> [a]
 nub' = S.toList . S.fromList
 
+-- test if one list has a unique element
+unique :: (Eq a) => [a] -> Bool
+unique xs = 1 == (length (group xs))
+
 maximumBy' :: (a -> a -> Ordering) -> [a] -> a
 maximumBy' _ [] = undefined
 maximumBy' cmp xs = foldl1' helper xs where
@@ -55,3 +65,8 @@ minimumBy' cmp xs = foldl1' helper xs where
         GT -> b
         _ -> a
 
+maximum' :: Ord a => [a] -> a
+maximum' = foldl1' max
+
+minimum' :: Ord a => [a] -> a
+minimum' = foldl1' min

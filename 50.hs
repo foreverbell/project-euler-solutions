@@ -3,8 +3,8 @@ import Data.Array
 import Data.Array.ST
 import Control.Monad (forM_, when)
 import Control.Monad.ST
-import Data.List (maximumBy)
 import Data.Function (on)
+import Common.List (maximumBy')
 
 isPrimeTo m = runSTArray $ do
     sieve <- newArray (2, m) True :: ST s (STArray s Int Bool)
@@ -25,11 +25,11 @@ isPrime x = isPrimeTable ! x
 
 solve :: [Int] -> (Int, Int)
 solve [] = (0, 0)
-solve primes@(p:ps) = maximumBy cmp [best, (solve ps)] where
+solve primes@(p:ps) = maximumBy' cmp [best, (solve ps)] where
     cmp = compare `on` snd
     sum = takeWhile (<= 1000000) (scanl1 (+) primes)
     can = filter (isPrime . fst) (zip sum [1 .. ])
-    best = maximumBy cmp can
+    best = maximumBy' cmp can
 
 -- the low bound of answer is 21, so we only need to consider the primes below 1000000/20=50000.
 main = print $ fst $ solve $ primesTo 50000
