@@ -4,10 +4,15 @@ module Common.Numbers (
     powMod,
     exgcd,
     inverse,
-    inverse'
+    inverse',
+    inverseToM,
+    inverseTo
 ) where
 
 import Data.Bits (Bits, (.&.), shiftR)
+import qualified Data.Array as A
+import Control.Monad (fail)
+import Data.Maybe (fromJust)
 
 {-# INLINABLE factorial #-}
 {-# INLINABLE binomial #-}
@@ -15,6 +20,8 @@ import Data.Bits (Bits, (.&.), shiftR)
 {-# INLINABLE exgcd #-}
 {-# INLINABLE inverse #-}
 {-# INLINABLE inverse' #-}
+{-# INLINABLE inverseToM #-}
+{-# INLINABLE inverseTo #-}
 
 factorial :: (Integral a) => a -> a
 factorial n = product [1 .. n]
@@ -53,3 +60,12 @@ inverse' x m = if d /= 1
     else a `rem` m
     where (d, a, b) = exgcd x m
 
+inverseToM :: (Monad m, Integral a) => Int -> a -> [m a]
+inverseToM n m = A.elems cache where
+    cache = A.listArray (0, n) $ (fail "undefined") : (return 1) : (map inv [2 .. (fromIntegral n)]) where
+        inv x = do
+            y <- cache A.! (fromIntegral (m `rem` x))
+            return $ y * (m - m `quot` x) `rem` m
+
+inverseTo :: (Integral a) => Int -> a -> [a]
+inverseTo n m = map fromJust $ inverseToM n m 
