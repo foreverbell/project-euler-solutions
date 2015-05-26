@@ -12,7 +12,7 @@ module Common.Numbers (
 import Data.Bits (Bits, (.&.), shiftR)
 import qualified Data.Array as A
 import Control.Monad (fail)
-import Data.Maybe (fromJust)
+import Control.Monad.Identity
 
 {-# INLINABLE factorial #-}
 {-# INLINABLE binomial #-}
@@ -62,10 +62,11 @@ inverse' x m = if d /= 1
 
 inverseToM :: (Monad m, Integral a) => Int -> a -> [m a]
 inverseToM n m = A.elems cache where
-    cache = A.listArray (0, n) $ (fail "undefined") : (return 1) : (map inv [2 .. (fromIntegral n)]) where
+    cache = A.listArray (0, n) $ (fail "undefined") : (return 1) : (map inv [2 .. n]) where
         inv x = do
-            y <- cache A.! (fromIntegral (m `rem` x))
-            return $ y * (m - m `quot` x) `rem` m
+            let (q, r) = m `quotRem` (fromIntegral x)
+            y <- cache A.! (fromIntegral r)
+            return $ y * (m - q) `rem` m
 
 inverseTo :: (Integral a) => Int -> a -> [a]
-inverseTo n m = map fromJust $ inverseToM n m 
+inverseTo n m = map runIdentity $ inverseToM n m 
