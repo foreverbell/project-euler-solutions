@@ -1,0 +1,6 @@
+# some packages may be missing here.
+
+vector
+control-monad-loop
+data-memocombinators
+matrix
