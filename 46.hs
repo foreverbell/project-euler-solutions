@@ -1,5 +1,5 @@
 import qualified Data.Set as S
-import Common.Primes (testPrime)
+import Common.Numbers.Primes (testPrime)
 
 findIt :: (S.Set Int) -> Int -> Int
 findIt p n = if testPrime n

@@ -1,4 +1,4 @@
-import Common.Primes (testPrime)
+import Common.Numbers.Primes (testPrime)
 import Common.List (rotate, nub')
 import Control.Monad (foldM)
 

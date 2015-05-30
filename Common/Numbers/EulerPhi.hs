@@ -1,10 +1,10 @@
-module Common.EulerPhi (
+module Common.Numbers.EulerPhi (
     phi,
     phiTo
 ) where
 
 import Common.Util (if')
-import Common.Primes (primes', countPrimeApprox)
+import Common.Numbers.Primes (primes', countPrimeApprox)
 import qualified Common.Ref as R
 import Data.Array.Unboxed
 import Data.Array.ST

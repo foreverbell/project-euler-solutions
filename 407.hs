@@ -4,7 +4,7 @@ import Data.Array
 import Data.Array.ST
 import Control.Monad (forM_, liftM, filterM, when)
 import Control.Monad.ST
-import Common.Numbers (inverse')
+import Common.Numbers.Numbers (inverse')
 
 data SieveItem = SieveItem {
     isP :: Bool,

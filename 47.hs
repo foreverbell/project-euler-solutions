@@ -1,5 +1,5 @@
 
-import Common.Primes (primes')
+import Common.Numbers.Primes (primes')
 
 countPrimeFactors x = helper x primes' 0 where
     divide x p = until (\x -> x `rem` p /= 0) (`div` p) x

@@ -1,7 +1,7 @@
 
 import Common.MapReduce (mapReduce)
-import Common.Primes (testPrime)
-import Common.Numbers (inverse, powMod)
+import Common.Numbers.Primes (testPrime)
+import Common.Numbers.Numbers (inverse, powMod)
 import Data.Maybe (isJust)
 import Data.List (find)
 

@@ -1,5 +1,5 @@
 
-import Common.Primes (primesTo)
+import Common.Numbers.Primes (primesTo)
 import Data.List (sort)
 import Control.Monad (filterM)
 

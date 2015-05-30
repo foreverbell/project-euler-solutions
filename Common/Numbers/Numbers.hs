@@ -1,4 +1,4 @@
-module Common.Numbers (
+module Common.Numbers.Numbers (
     factorial,
     binomial,
     powMod,

@@ -1,6 +1,6 @@
 
 import Data.List (permutations)
-import Common.Primes (testPrime)
+import Common.Numbers.Primes (testPrime)
 
 -- 8 or 9-digit pandigital is divisable by 3 
 main = print $ maximum candidate where

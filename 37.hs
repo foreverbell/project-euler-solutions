@@ -1,5 +1,5 @@
 import Data.List (all)
-import Common.Primes (testPrime)
+import Common.Numbers.Primes (testPrime)
 
 main = print $ ret - (2 + 3 + 5 + 7) where 
     ret = sum $ filter check $ concat $ map get [2, 3, 5, 7]

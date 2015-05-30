@@ -1,6 +1,6 @@
 
-import Common.Primes (primesTo)
-import Common.Numbers (powMod)
+import Common.Numbers.Primes (primesTo)
+import Common.Numbers.Numbers (powMod)
 import qualified Data.Set as S
 
 primesN = take 500500 $ primesTo (500500 * 15)

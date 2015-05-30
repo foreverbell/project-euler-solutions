@@ -1,6 +1,6 @@
 import Data.List (sort)
 import Data.Function (on)
-import Common.Primes (primesTo)
+import Common.Numbers.Primes (primesTo)
 import Common.List (minimumBy')
 
 main = print $ (fst answer) * (snd answer) where

@@ -1,6 +1,6 @@
 
-import Common.Numbers (crt2, inverse')
-import Common.Primes (primesTo)
+import Common.Numbers.Numbers (crt2, inverse')
+import Common.Numbers.Primes (primesTo)
 import Control.Monad (foldM)
 
 primes :: [Integer]

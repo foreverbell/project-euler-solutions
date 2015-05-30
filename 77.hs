@@ -1,6 +1,6 @@
 import Data.List (findIndex)
 import Data.Maybe (fromJust)
-import Common.Primes (primesTo)
+import Common.Numbers.Primes (primesTo)
 
 primes = primesTo 100
 primesN = length primes

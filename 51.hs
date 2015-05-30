@@ -1,7 +1,7 @@
 
 import Data.Char (chr, ord)
 import Common.Util (if')
-import Common.Primes (testPrime)
+import Common.Numbers.Primes (testPrime)
 
 type Mask = [Int]
 

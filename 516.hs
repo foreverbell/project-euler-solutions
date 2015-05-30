@@ -1,5 +1,5 @@
 
-import Common.Primes (testPrime)
+import Common.Numbers.Primes (testPrime)
 import Control.Monad (foldM)
 import Data.List (sort)
 

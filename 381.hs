@@ -1,6 +1,6 @@
 
-import Common.Primes (primesTo)
-import Common.Numbers (inverse')
+import Common.Numbers.Primes (primesTo)
+import Common.Numbers.Numbers (inverse')
 import Data.Array.Unboxed
 import Data.Array.ST
 import Control.Monad (forM_)

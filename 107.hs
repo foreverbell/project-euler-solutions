@@ -2,7 +2,7 @@ import Data.Array.ST
 import Control.Monad
 import Control.Monad.ST
 import qualified Common.Ref as R
-import qualified Common.UnionFind as UF
+import qualified Common.DataStructure.UnionFind as UF
 import Data.List (sortBy)
 import Data.Function (on)
 

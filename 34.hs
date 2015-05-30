@@ -1,4 +1,4 @@
-import Common.Numbers (factorial)
+import Common.Numbers.Numbers (factorial)
 import Data.List (unfoldr)
 
 sumOfDF x = sum $ map factorial $ unfoldr helper x where

@@ -1,7 +1,7 @@
 
 import Common.Util (if')
-import Common.Numbers (inverseTo)
-import Common.Primes (testPrime)
+import Common.Numbers.Numbers (inverseTo)
+import Common.Numbers.Primes (testPrime)
 import Data.Array.Unboxed
 import Data.List (foldl')
 import Control.DeepSeq (deepseq)

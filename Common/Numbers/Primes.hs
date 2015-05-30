@@ -1,4 +1,4 @@
-module Common.Primes (
+module Common.Numbers.Primes (
     primes,
     primes',
     primesTo, 
@@ -10,7 +10,7 @@ import Control.Monad (forM_, when)
 import Data.Array.Unboxed
 import Data.Array.ST
 import Data.Bits (shiftR, (.&.))
-import Common.Numbers (powMod)
+import Common.Numbers.Numbers (powMod)
 import Common.Util (isqrt)
 
 primes :: [Int]

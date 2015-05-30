@@ -1,5 +1,5 @@
 
-import Common.Numbers (powMod, inverse)
+import Common.Numbers.Numbers (powMod, inverse)
 import Data.List (foldl')
 
 solve :: Int

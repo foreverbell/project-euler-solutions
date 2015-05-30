@@ -1,4 +1,4 @@
-import Common.Primes (primes)
+import Common.Numbers.Primes (primes)
 
 dfs :: [Int] -> Int -> Int -> Integer -> Integer -> Integer
 dfs (p:ps) t total num best 

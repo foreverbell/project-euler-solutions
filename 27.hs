@@ -1,6 +1,6 @@
 import Data.Foldable (maximumBy)
 import Data.Function (on)
-import Common.Primes (testPrime)
+import Common.Numbers.Primes (testPrime)
 import Common.List (maximumBy')
 
 produceLength (a, b) = length $ takeWhile (testPrime . (\n -> n^2+a*n+b)) [0 .. ]

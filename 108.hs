@@ -1,4 +1,4 @@
-import Common.Primes (primesTo)
+import Common.Numbers.Primes (primesTo)
 
 primeTable = primesTo 100000
 

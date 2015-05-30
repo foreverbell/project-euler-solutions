@@ -1,4 +1,4 @@
-module Common.Fenwick (
+module Common.DataStructure.Fenwick (
     ask,
     askLR,
     modify

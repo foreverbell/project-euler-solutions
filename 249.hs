@@ -1,5 +1,5 @@
 
-import Common.Primes (primesTo, testPrime)
+import Common.Numbers.Primes (primesTo, testPrime)
 import qualified Data.Vector.Unboxed as V
 import Data.Vector.Unboxed ((!))
 import Data.List (foldl')

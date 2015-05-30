@@ -1,5 +1,5 @@
 import Data.Array
-import Common.Primes (primesTo)
+import Common.Numbers.Primes (primesTo)
 
 find num (p:ps) = if num * p > 1000000 
     then num

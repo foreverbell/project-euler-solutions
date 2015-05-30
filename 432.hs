@@ -1,6 +1,6 @@
 
 import Common.Util (isqrt, if', submasks)
-import Common.EulerPhi (phiTo)
+import Common.Numbers.EulerPhi (phiTo)
 import Data.List (foldl')
 import Data.Bits
 import Control.Monad (guard)

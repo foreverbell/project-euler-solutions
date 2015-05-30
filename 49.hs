@@ -1,6 +1,6 @@
 import qualified Data.Set as S
 import Data.List (sort)
-import Common.Primes (primesTo)
+import Common.Numbers.Primes (primesTo)
 
 main = putStrLn $ concatMap show [a,b,c] where 
     prime4 = dropWhile (< 1000) (primesTo 10000)

@@ -1,5 +1,5 @@
 
-import Common.Numbers (inverse')
+import Common.Numbers.Numbers (inverse')
 import Data.List (foldl')
 
 product' xs p = foldl' helper 1 xs where

@@ -1,5 +1,5 @@
 import Data.Array
-import Common.Primes (primesTo, testPrime)
+import Common.Numbers.Primes (primesTo, testPrime)
 
 primeList = primesTo 9999 :: [Int]
 primeArray = listArray (0, (length primeList) - 1) primeList

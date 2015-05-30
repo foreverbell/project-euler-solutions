@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts, FlexibleInstances #-}
 
-module Common.UnionFind (
+module Common.DataStructure.UnionFind (
     UFSet(..),
     display,
     make,

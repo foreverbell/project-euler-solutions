@@ -1,5 +1,5 @@
 
-import Common.Numbers (powMod)
+import Common.Numbers.Numbers (powMod)
 import qualified Data.Vector.Unboxed as V
 import Data.Vector.Unboxed ((!))
 

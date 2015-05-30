@@ -1,7 +1,7 @@
 
 import Common.MapReduce (mapReduce)
-import Common.Primes (primesTo)
-import Common.Numbers (inverse')
+import Common.Numbers.Primes (primesTo)
+import Common.Numbers.Numbers (inverse')
 import Data.List (tails)
 import Data.Array.ST
 import Data.Array.Unboxed

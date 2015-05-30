@@ -1,4 +1,4 @@
-import Common.Primes (primesTo)
+import Common.Numbers.Primes (primesTo)
 import Common.List (nub')
 
 limit = 50000000

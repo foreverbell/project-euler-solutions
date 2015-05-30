@@ -1,5 +1,5 @@
-import Common.Primes (primesTo)
-import Common.Numbers (powMod)
+import Common.Numbers.Primes (primesTo)
+import Common.Numbers.Numbers (powMod)
 
 solve n modulo = productMod modulo $ map (\x -> ((powMod x (countExponent n x) modulo)^2 + 1) `mod` modulo) primes where
     productMod m xs = foldl helper 1 xs where

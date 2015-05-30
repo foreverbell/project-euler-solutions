@@ -1,5 +1,5 @@
 
-import Common.Primes (primesTo)
+import Common.Numbers.Primes (primesTo)
 
 count n p = sum $ takeWhile (/= 0) ps where
     ps = (n `div` p) : map (\x -> x `div` p) ps

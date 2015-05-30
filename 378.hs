@@ -4,7 +4,7 @@ import Data.Array.Unboxed
 import Data.Array.ST
 import Control.Monad.ST
 import Data.List (zipWith4, foldl')
-import qualified Common.Fenwick as F
+import qualified Common.DataStructure.Fenwick as F
 
 m = 10^18
 foldMod a b = (a + b) `mod` m

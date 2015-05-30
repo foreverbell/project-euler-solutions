@@ -6,7 +6,7 @@ import qualified Data.Vector.Unboxed as V
 import qualified Data.Vector.Unboxed.Mutable as MV
 import qualified Data.MemoCombinators as Memo
 import Control.Monad (forM_)
-import Common.Primes (primesTo)
+import Common.Numbers.Primes (primesTo)
 
 iroot x p = floor $ (fromIntegral x) ** (1/p)
 

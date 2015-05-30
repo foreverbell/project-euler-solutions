@@ -1,5 +1,5 @@
 
-import Common.Primes (testPrime)
+import Common.Numbers.Primes (testPrime)
 
 solve :: [Int] -> [Int] -> [Int] -> Int -> Int -> Int
 solve seq1 seq2 seq3 p dep = if ptotal * 10 < total
