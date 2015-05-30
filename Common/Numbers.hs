@@ -6,7 +6,9 @@ module Common.Numbers (
     inverse,
     inverse',
     inverseToM,
-    inverseTo
+    inverseTo,
+    crt2,
+    crt
 ) where
 
 import Data.Bits (Bits, (.&.), shiftR)
@@ -22,6 +24,8 @@ import Control.Monad.Identity
 {-# INLINABLE inverse' #-}
 {-# INLINABLE inverseToM #-}
 {-# INLINABLE inverseTo #-}
+{-# INLINABLE crt2 #-}
+{-# INLINABLE crt #-}
 
 factorial :: (Integral a) => a -> a
 factorial n = product [1 .. n]
@@ -70,3 +74,15 @@ inverseToM n m = A.elems cache where
 
 inverseTo :: (Integral a) => Int -> a -> [a]
 inverseTo n m = map runIdentity $ inverseToM n m 
+
+crt2 :: (Integral a) => (a, a) -> (a, a) -> a
+crt2 (p1, r1) (p2, r2) = (a + b) `rem` n where
+    n = p1 * p2
+    a = (inverse' p2 p1) * p2 `rem` n * r1 `mod` n
+    b = (inverse' p1 p2) * p1 `rem` n * r2 `mod` n
+
+crt :: (Integral a) => [(a, a)] -> a
+crt prs = loop 1 1 prs where
+    loop _ res [] = res
+    loop pp res ((p, r):rest) = loop (pp * p) (crt2 (pp, res) (p, r)) rest
+
