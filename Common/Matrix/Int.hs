@@ -131,9 +131,9 @@ multiply' modulo m1@(Matrix r _ _) m2@(Matrix _ c _) = create r c $ \(i, j) -> d
     bvs = RV.generate c $ \i -> getCol (i + 1) m2
     dotProduct v1 v2 = V.foldl' (\a b -> (a + b) `rem` modulo) 0 $ V.zipWith (\a b -> (a * b) `rem` modulo) v1 v2
 
-power :: (Integral a, Bits a) => Int -> a -> Matrix -> Matrix
+power :: (Integral a, Bits a) => Int -> Matrix -> a -> Matrix
 {-# INLINE power #-}
-power modulo p m@(Matrix r c _) 
+power modulo m@(Matrix r c _) p
     | r == c = helper m p $ identity r 
     | otherwise = error $ "power: matrix not squared."
     where

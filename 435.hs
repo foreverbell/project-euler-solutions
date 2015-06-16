@@ -1,6 +1,4 @@
 
-type Matrix2 = (Int, Int, Int, Int)
-
 multiplyMat (a, b, c, d) (a', b', c', d') m = ((a * a' + b * c') `mod` m, (a * b' + b * d') `mod` m, (c * a' + d * c') `mod` m, (c * b' + d * d') `mod` m)
 
 powerMat mat 0 m = (1, 0, 0, 1)
