@@ -11,7 +11,7 @@ module Common.Matrix.Int (
     zero, identity, scalar,
     add, subtract, multiply,
     power,
-    createOps
+    bind, bind'
 ) where
 
 import           Prelude hiding (subtract, negate, fmap)
@@ -21,8 +21,8 @@ import qualified Data.Vector.Unboxed as V
 import qualified Data.Vector as RV
 
 data Matrix = Matrix {
-    rows :: Int,
-    cols :: Int,
+    rows :: {-# UNPACK #-} !Int,
+    cols :: {-# UNPACK #-} !Int,
     vect :: V.Vector Int
 } deriving (Eq, Show)
 
@@ -104,45 +104,54 @@ identity :: Int -> Matrix
 {-# INLINE identity #-}
 identity n = scalar n 1
 
-add :: Int -> Matrix -> Matrix -> Matrix
+add :: (Int -> Int -> Int) -> Matrix -> Matrix -> Matrix
 {-# INLINE add #-}
-add modulo m1@(Matrix r1 c1 v1) m2@(Matrix r2 c2 v2)
-    | r1 == r2 && c1 == c2 = Matrix r1 c1 $ V.zipWith h v1 v2
+add af m1@(Matrix r1 c1 v1) m2@(Matrix r2 c2 v2)
+    | r1 == r2 && c1 == c2 = Matrix r1 c1 $ V.zipWith af v1 v2
     | otherwise = error $ "add: matrix size not match."
-    where h a b = (a + b) `rem` modulo
 
-subtract :: Int -> Matrix -> Matrix -> Matrix
+subtract :: (Int -> Int -> Int) -> Matrix -> Matrix -> Matrix
 {-# INLINE subtract #-}
-subtract modulo m1@(Matrix r1 c1 v1) m2@(Matrix r2 c2 v2)
-    | r1 == r2 && c1 == c2 = Matrix r1 c1 $ V.zipWith h v1 v2
-    | otherwise = error $ "subtract: matrix size not match."
-    where h a b = (a - b) `rem` modulo
+subtract af m1 m2 = add (\a b -> af a (-b)) m1 m2
 
-multiply :: Int -> Matrix -> Matrix -> Matrix
+multiply :: (Int -> Int -> Int) -> (Int -> Int -> Int) -> Matrix -> Matrix -> Matrix
 {-# INLINE multiply #-}
-multiply modulo m1@(Matrix _ c _) m2@(Matrix r _ _)
-    | c == r = multiply' modulo m1 m2
+multiply af mf m1@(Matrix _ c _) m2@(Matrix r _ _)
+    | c == r = multiply' af mf m1 m2
     | otherwise = error $ "multiply: matrix size not match."
 
-multiply' :: Int -> Matrix -> Matrix -> Matrix
+multiply' :: (Int -> Int -> Int) -> (Int -> Int -> Int) -> Matrix -> Matrix -> Matrix
 {-# INLINE multiply' #-}
-multiply' modulo m1@(Matrix r _ _) m2@(Matrix _ c _) = create r c $ \(i, j) -> dotProduct (RV.unsafeIndex avs $ i - 1) (RV.unsafeIndex bvs $ j - 1) where
+multiply' af mf m1@(Matrix r _ _) m2@(Matrix _ c _) = create r c $ \(i, j) -> dotProduct (RV.unsafeIndex avs $ i - 1) (RV.unsafeIndex bvs $ j - 1) where
     avs = RV.generate r $ \i -> getRow (i + 1) m1
     bvs = RV.generate c $ \i -> getCol (i + 1) m2
-    dotProduct v1 v2 = V.foldl' (\a b -> (a + b) `rem` modulo) 0 $ V.zipWith (\a b -> (a * b) `rem` modulo) v1 v2
+    dotProduct v1 v2 = V.foldl' af 0 $ V.zipWith mf v1 v2
 
-power :: (Integral a, Bits a) => Int -> Matrix -> a -> Matrix
+power :: (Integral a, Bits a) => (Int -> Int -> Int) -> (Int -> Int -> Int) -> Matrix -> a -> Matrix
 {-# INLINE power #-}
-power modulo m@(Matrix r c _) p
+power af mf m@(Matrix r c _) p
     | r == c = helper m p $ identity r 
     | otherwise = error $ "power: matrix not squared."
     where
+        mult = multiply' af mf
         helper _ 0 ret = ret
         helper m p ret = if ((p .&. 1) == 1)
-            then helper m' p' (multiply' modulo ret m)
+            then helper m' p' (mult ret m)
             else helper m' p' ret where
-                m' = multiply' modulo m m
+                m' = mult m m
                 p' = p `shiftR` 1
 
-{-# INLINE createOps #-}
-createOps modulo = (add modulo, subtract modulo, multiply modulo, power modulo)
+madd :: Int -> Int -> Int -> Int
+{-# INLINE madd #-}
+madd m a b = (a + b) `rem` m
+
+mmul :: Int -> Int -> Int -> Int 
+{-# INLINE mmul #-}
+mmul m a b = (a * b) `rem` m
+
+bind :: (Integral a, Bits a) => Int -> ((Matrix -> Matrix -> Matrix), (Matrix -> Matrix -> Matrix), (Matrix -> Matrix -> Matrix), (Matrix -> a -> Matrix))
+bind m = (add (madd m), subtract (madd m), multiply (madd m) (mmul m), power (madd m) (mmul m))
+
+bind' :: (Integral a, Bits a) => ((Matrix -> Matrix -> Matrix), (Matrix -> Matrix -> Matrix), (Matrix -> Matrix -> Matrix), (Matrix -> a -> Matrix))
+bind'  = (add (+), subtract (+), multiply (+) (*), power (+) (*))
+
