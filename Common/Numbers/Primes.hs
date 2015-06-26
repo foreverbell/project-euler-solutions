@@ -3,7 +3,8 @@ module Common.Numbers.Primes (
     primes',
     primesTo, 
     testPrime,
-    countPrimeApprox
+    countPrimeApprox,
+    countPrime
 ) where
 
 import Control.Monad (forM_, when)
@@ -11,7 +12,7 @@ import Data.Array.Unboxed
 import Data.Array.ST
 import Data.Bits (shiftR, (.&.))
 import Common.Numbers.Numbers (powMod)
-import Common.Util (isqrt)
+import Common.Util (isqrt, if')
 
 primes :: [Int]
 primes = 2 : eratos [3, 5 .. ] where
@@ -88,3 +89,22 @@ countPrimeApprox = truncate . appi . fromIntegral where
           | x < 120000000 = 617 / 256
           | x > 10**12    = undefined
           | otherwise     = 2.0625 + l * (3 + l' * l * (13.25 + l' * l * 57.75))
+
+countPrime :: Int -> Int
+countPrime n = dynamic ! 0 where
+    root = isqrt n
+    ps = zip [0 .. ] $ primesTo (root + 1)
+    last = n `div` (root + 1)
+    v = zip [0 .. ] $ (map (\i -> n `div` i) [1 .. root + 1]) ++ [last - 1, last - 2 .. 0]
+    dynamic = runSTUArray $ do
+        dp <- newListArray (0, (length v) - 1) $ map ((max 0) . pred . snd) v
+        forM_ ps $ \(i, p) -> do
+            let p2 = p * p
+            forM_ (takeWhile (\(_, k) -> k >= p2) v) $ \(j, k) -> do
+                let k' = k `div` p
+                let j' = pred $ if' (k' < last) (root + 1 + last - k') (n `div` k')
+                v1 <- readArray dp j
+                v2 <- readArray dp j'
+                writeArray dp j (v1 - v2 + i)
+        return dp
+                
