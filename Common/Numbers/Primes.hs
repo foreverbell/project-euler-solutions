@@ -4,7 +4,8 @@ module Common.Numbers.Primes (
     primesTo, 
     testPrime,
     countPrimeApprox,
-    countPrime
+    countPrime,
+    countPrime'
 ) where
 
 import Control.Monad (forM_, when)
@@ -90,8 +91,11 @@ countPrimeApprox = truncate . appi . fromIntegral where
           | x > 10**12    = undefined
           | otherwise     = 2.0625 + l * (3 + l' * l * (13.25 + l' * l * 57.75))
 
-countPrime :: Int -> Int
-countPrime n = dynamic ! 0 where
+countPrime :: Int -> Int 
+countPrime = snd . head . countPrime'
+
+countPrime' :: Int -> [(Int, Int)]
+countPrime' n = zip (map snd v) $ elems dynamic where
     root = isqrt n
     ps = zip [0 .. ] $ primesTo (root + 1)
     last = n `div` (root + 1)
@@ -107,4 +111,3 @@ countPrime n = dynamic ! 0 where
                 v2 <- readArray dp j'
                 writeArray dp j (v1 - v2 + i)
         return dp
-                
