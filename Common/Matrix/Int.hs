@@ -6,7 +6,7 @@ module Common.Matrix.Int (
     fmap,
     (!), (!.), getElem, safeGet, unsafeGet,
     getRow, getCol,
-    fromList, toList,
+    fromList, toList, fromLists, toLists,
     create,
     zero, identity, scalar,
     add, subtract, multiply,
@@ -14,7 +14,7 @@ module Common.Matrix.Int (
     bind, bind'
 ) where
 
-import           Prelude hiding (subtract, negate, fmap)
+import           Prelude hiding (subtract, fmap)
 import           Control.DeepSeq
 import           Data.Bits (Bits, shiftR, (.&.))
 import qualified Data.Vector.Unboxed as V
@@ -35,7 +35,7 @@ encode m (i, j) = (i - 1) * m + j - 1
 
 fmap :: (Int -> Int) -> Matrix -> Matrix
 {-# INLINE fmap #-}
-fmap f m@(Matrix r c v) = Matrix r c $ V.map f v
+fmap f (Matrix r c v) = Matrix r c $ V.map f v
 
 getElem :: Int -> Int -> Matrix -> Int
 {-# INLINE getElem #-}
@@ -59,7 +59,7 @@ safeGet i j m@(Matrix r c _)
 
 unsafeGet :: Int -> Int -> Matrix -> Int
 {-# INLINE unsafeGet #-}
-unsafeGet i j m@(Matrix r c v) = V.unsafeIndex v $ encode c (i, j)
+unsafeGet i j (Matrix _ c v) = V.unsafeIndex v $ encode c (i, j)
 
 getRow :: Int -> Matrix -> V.Vector Int
 {-# INLINE getRow #-}
@@ -106,7 +106,7 @@ identity n = scalar n 1
 
 add :: (Int -> Int -> Int) -> Matrix -> Matrix -> Matrix
 {-# INLINE add #-}
-add af m1@(Matrix r1 c1 v1) m2@(Matrix r2 c2 v2)
+add af (Matrix r1 c1 v1) (Matrix r2 c2 v2)
     | r1 == r2 && c1 == c2 = Matrix r1 c1 $ V.zipWith af v1 v2
     | otherwise = error $ "add: matrix size not match."
 
@@ -135,11 +135,11 @@ power af mf m@(Matrix r c _) p
     where
         mult = multiply' af mf
         helper _ 0 ret = ret
-        helper m p ret = if ((p .&. 1) == 1)
-            then helper m' p' (mult ret m)
-            else helper m' p' ret where
-                m' = mult m m
-                p' = p `shiftR` 1
+        helper a x ret = if ((x .&. 1) == 1)
+            then helper a' x' (mult ret a)
+            else helper a' x' ret where
+                a' = mult a a
+                x' = x `shiftR` 1
 
 madd :: Int -> Int -> Int -> Int
 {-# INLINE madd #-}
