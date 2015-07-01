@@ -1,5 +1,9 @@
 # project-euler
 
+## WARNING! SPOILER ALERT!
+
+You may use a search engine like Google to find this place, but please, do **NOT** refer to these codes before you fully solve this problem. Copying others code is cheating and it is meaningless.
+
 ## Description
 
 My solutions to Project Euler in some fancy programming languages.
