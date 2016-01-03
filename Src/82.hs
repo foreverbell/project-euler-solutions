@@ -7,7 +7,7 @@ import Data.List (sortBy, groupBy)
 import Data.Function (on)
 
 readInput :: IO [[Int]]
-readInput = (readFile "Input/p083_matrix.txt") >>= (return . (map comma) . words) where
+readInput = (readFile "Input/p082_matrix.txt") >>= (return . (map comma) . words) where
     comma [] = []
     comma (',' : xs) = comma xs
     comma s = (read a) : (comma b)
@@ -23,12 +23,12 @@ extractEdge mat' = (n * m + 2, concat [ part1, part2, part3 ]) where
         (dx, dy) <- dirs
         guard $ within (x + dx) (y + dy)
         return $ (label x y, label (x + dx) (y + dy), mat!(x + dx, y + dy))
-    part2 = [ (n*m, label 0 0, mat!(0,0)) ]
-    part3 = [ (label (n-1) (m-1), n*m+1, 0) ]
+    part2 = [ (n*m, label i 0, mat!(i,0)) | i <- [0 .. n - 1] ]
+    part3 = [ (label i (m-1), n*m+1, 0) | i <- [0 .. n - 1] ]
     n = length mat'
     m = length $ mat'!!0
     mat = listArray ((0, 0), (n - 1, m - 1)) (concat mat') :: Array (Int, Int) Int
-    dirs = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+    dirs = [(1, 0), (-1, 0), (0, 1)]
     within x y = (x >= 0) && (y >= 0) && (x < n) && (y < m)
     label x y = x * m + y
 
@@ -57,6 +57,7 @@ dijkstra n s t edges = runST $ do
             old <- readArray dist v
             new <- (readArray dist u) >>= (return . (+w))
             writeArray dist v (min old new)
+        extractMin :: Int -> STArray s Int Int -> STArray s Int Bool -> ST s Int
         extractMin n dist vis = do
             best <- newSTRef (-1)
             bestDistance <- newSTRef maxBound

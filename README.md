@@ -1,4 +1,4 @@
-# project-euler
+# project-euler-solutions
 
 ## WARNING! SPOILER ALERT!
 
@@ -6,13 +6,27 @@ You may use a search engine like Google to find this place, but please, do **NOT
 
 ## Description
 
-My solutions to Project Euler in some fancy programming languages.
+My solutions to Project Euler in Haskell.
 
-My project euler handle: [foreverbell](https://projecteuler.net/profile/foreverbell.png), friend key: 658700_e467bf8d1b99d40348ddabe8736a5ce2.
+Handle: [foreverbell](https://projecteuler.net/profile/foreverbell.png), friend key: 658700_e467bf8d1b99d40348ddabe8736a5ce2.
 
-The fancies: 
+## Build
 
-* Haskell (ghc 7.8.3)
+We provide two ways to build one solution.
+
+* ```
+$ make 42
+$ Build/42
+```
+If ghc is complaining about missing packages, see `project-euler-solutions.cabal.in` and `configure.hs` for more details.
+
+* (recommended) 
+```
+./configure.hs 42
+stack init
+stack build
+stack exec 42
+```
 
 ## License
 

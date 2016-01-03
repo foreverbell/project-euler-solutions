@@ -35,9 +35,9 @@ dynamic n mask = Memo.memo2 Memo.bits (Memo.arrayRange (0, 127)) dynamicMemo n m
     dynamicMemo n mask = if' (m == 0) 0 $ (<+>) ((bigPhi m) + 1) $ sum $ do
         sub <- submasks mask
         let cnt = foldl' (<+>) 0 $ do
-            sub2 <- submasks mask
-            guard $ (sub2 .&. sub) == sub
-            return $ (miuMask ((complement sub) .&. sub2)) * (dynamic m sub2)
+                sub2 <- submasks mask
+                guard $ (sub2 .&. sub) == sub
+                return $ (miuMask ((complement sub) .&. sub2)) * (dynamic m sub2)
         let part1 = filterMask (sub .&. mask)
         let part2 = filterMask ((complement sub) .&. mask)
         let multiplier = (product part1) * (product (map pred part2)) - 1

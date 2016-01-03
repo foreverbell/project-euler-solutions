@@ -4,3 +4,9 @@
 *.swp
 *.hp
 *.prof
+
+.stack-work/
+stack.yaml
+project-euler-solutions.cabal
+
+Build/

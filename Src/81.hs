@@ -12,6 +12,7 @@ getShortest mat = runST $ do
     where
         n = length mat
         m = length $ mat!!0
+        update :: STArray s (Int, Int) Int -> Int -> Int -> ST s ()
         update dp 0 0 = writeArray dp (0, 0) ((mat!!0)!!0)
         update dp 0 j = do
             go <- readArray dp (0, j - 1) 
