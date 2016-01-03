@@ -13,7 +13,6 @@ module Common.Numbers.Numbers (
 
 import Data.Bits (Bits, (.&.), shiftR)
 import qualified Data.Array as A
-import Control.Monad (fail)
 import Control.Monad.Identity
 
 {-# INLINABLE factorial #-}
@@ -33,11 +32,11 @@ factorial n = product [1 .. n]
 binomial :: (Integral a) => a -> a -> a
 binomial a b = if a < b
     then 0
-    else (product [b + 1 .. a]) `quot` (product [1 .. (a - b)]) 
+    else product [b + 1 .. a] `quot` product [1 .. (a - b)]
 
 powMod :: (Integral a, Bits b, Integral b) => a -> b -> a -> a
 powMod a p m = helper a p m 1 where
-    helper a 0 m ret = ret
+    helper _ 0 _ ret = ret
     helper a p m ret = if ((p .&. 1) == 1)
         then helper a' p' m (ret * a `rem` m)
         else helper a' p' m ret where
@@ -62,7 +61,7 @@ inverse' :: (Integral a) => a -> a -> a
 inverse' x m = if d /= 1
     then undefined
     else a `rem` m
-    where (d, a, b) = exgcd x m
+    where (d, a, _) = exgcd x m
 
 inverseToM :: (Monad m, Integral a) => Int -> a -> [m a]
 inverseToM n m = A.elems cache where

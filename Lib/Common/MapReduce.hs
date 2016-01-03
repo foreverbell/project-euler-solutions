@@ -3,7 +3,7 @@ module Common.MapReduce (
     mapReduce'
 ) where
 
-import Control.Parallel.Strategies (parMap, rdeepseq, using, Strategy, NFData)
+import Control.Parallel.Strategies (parMap, rdeepseq, using, NFData)
 import Control.Parallel (pseq)
 
 {-# INLINABLE divide #-}

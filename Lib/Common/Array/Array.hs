@@ -4,7 +4,7 @@ module Common.Array.Array (
 ) where
 
 import GHC.Arr
-import Data.Array.MArray (MArray, Ix, readArray, writeArray)
+import Data.Array.MArray (MArray, readArray, writeArray)
 import Data.Array.Base (unsafeRead, unsafeWrite)
 
 {-# INLINABLE modifyArray #-}

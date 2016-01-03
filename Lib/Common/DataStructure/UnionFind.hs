@@ -23,7 +23,7 @@ display ufs = do
     size <- R.read $ ufsSize ufs
     let range@(l, r) = ufsRange ufs
     let set = ufsSet ufs
-    elems <- sequence $ map (\i -> MA.readArray set i) [l .. r]
+    elems <- mapM (MA.readArray set) [l .. r]
     return $ show (size, range, zip [l .. r] elems)
 
 make :: (MA.MArray a Int m, R.R m) => (Int, Int) -> m (UFSet a m) 
@@ -43,7 +43,7 @@ union :: (MA.MArray a Int m, R.R m) => UFSet a m -> Int -> Int -> m Bool
 union ufs u v = do
     u' <- find ufs u
     v' <- find ufs v
-    if (u' /= v')
+    if u' /= v'
         then do
             MA.writeArray (ufsSet ufs) u' v' 
             R.modify (ufsSize ufs) pred

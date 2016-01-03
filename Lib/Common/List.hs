@@ -29,8 +29,8 @@ rotate n xs = take (length xs) (drop n (cycle xs))
 -- set differeance (assert already sorted)
 minus :: (Ord a) => [a] -> [a] -> [a]
 minus xs [] = xs
-minus [] ys = []
-minus xs'@(x:xs) ys'@(y:ys) = case (compare x y) of
+minus [] _ = []
+minus xs'@(x:xs) ys'@(y:ys) = case compare x y of
     LT -> x : xs `minus` ys'
     EQ -> xs `minus` ys
     GT -> xs' `minus` ys
@@ -39,7 +39,7 @@ minus xs'@(x:xs) ys'@(y:ys) = case (compare x y) of
 intersect :: (Ord a) => [a] -> [a] -> [a]
 intersect [] _ = []
 intersect _ [] = []
-intersect xs'@(x:xs) ys'@(y:ys) = case (compare x y) of
+intersect xs'@(x:xs) ys'@(y:ys) = case compare x y of
     EQ -> x : xs `intersect` ys
     LT -> xs `intersect` ys'
     GT -> xs' `intersect` ys
@@ -49,7 +49,7 @@ nub' = S.toList . S.fromList
 
 -- test if one list has a unique element
 unique :: (Eq a) => [a] -> Bool
-unique xs = 1 == (length (group xs))
+unique xs = 1 == length (group xs)
 
 maximumBy' :: (a -> a -> Ordering) -> [a] -> a
 maximumBy' _ [] = undefined

@@ -17,8 +17,9 @@ import Common.Util (isqrt, if')
 
 primes :: [Int]
 primes = 2 : eratos [3, 5 .. ] where
+    eratos [] = []
     eratos (p:xs) = p : eratos (xs `minus` [p^2, p^2+p .. ])
-    minus xs'@(x:xs) ys'@(y:ys) = case (compare x y) of 
+    minus xs'@(x:xs) ys'@(y:ys) = case compare x y of 
         LT -> x : minus xs ys'
         EQ -> minus xs ys 
         GT -> minus xs' ys
@@ -52,7 +53,7 @@ millerRabinTest n b = if (p == 1) || (p == n - 1) || (n == b)
         p = if (n < 2^31)
             then powMod b m n
             else fromIntegral $ powMod (toInteger b) (toInteger m) (toInteger n)
-        rec 0 p = False
+        rec 0 _ = False
         rec cnt p = if (p2 == n - 1)
             then True
             else rec (cnt - 1) p2 where

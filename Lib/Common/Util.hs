@@ -30,6 +30,6 @@ combmasks :: Int -> Int -> [Int]
 {-# INLINE combmasks #-}
 combmasks n k = takeWhile (< limit) $ iterate iter $ (1 `shiftL` k) - 1 where
     limit = 1 `shiftL` n
-    iter comb = (((comb .&. (complement y)) `div` x) `shiftR` 1) .|. y where
+    iter comb = (((comb .&. complement y) `div` x) `shiftR` 1) .|. y where
         x = comb .&. (-comb)
         y = comb + x

@@ -3,7 +3,7 @@ module Common.Array.Unboxed.Vector (
     unsafeModify
 ) where
 
-import Prelude hiding (read, write)
+import Prelude hiding (read)
 import Control.Monad.Primitive (PrimMonad, PrimState)
 import Data.Vector.Unboxed.Mutable (Unbox, MVector, read, write, unsafeRead, unsafeWrite)
 

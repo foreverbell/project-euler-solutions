@@ -17,6 +17,7 @@ module Common.Matrix.Int (
 import           Prelude hiding (subtract, fmap)
 import           Control.DeepSeq
 import           Data.Bits (Bits, shiftR, (.&.))
+import           Data.Maybe (fromMaybe)
 import qualified Data.Vector.Unboxed as V
 import qualified Data.Vector as RV
 
@@ -39,9 +40,7 @@ fmap f (Matrix r c v) = Matrix r c $ V.map f v
 
 getElem :: Int -> Int -> Matrix -> Int
 {-# INLINE getElem #-}
-getElem i j m = case safeGet i j m of
-    Just x -> x
-    Nothing -> error "getElem: out of bound."
+getElem i j m = fromMaybe (error "getElem: out of bound.") (safeGet i j m)
 
 (!) :: Matrix -> (Int, Int) -> Int
 {-# INLINE (!) #-}
@@ -108,7 +107,7 @@ add :: (Int -> Int -> Int) -> Matrix -> Matrix -> Matrix
 {-# INLINE add #-}
 add af (Matrix r1 c1 v1) (Matrix r2 c2 v2)
     | r1 == r2 && c1 == c2 = Matrix r1 c1 $ V.zipWith af v1 v2
-    | otherwise = error $ "add: matrix size not match."
+    | otherwise = error "add: matrix size not match."
 
 subtract :: (Int -> Int -> Int) -> Matrix -> Matrix -> Matrix
 {-# INLINE subtract #-}
@@ -118,7 +117,7 @@ multiply :: (Int -> Int -> Int) -> (Int -> Int -> Int) -> Matrix -> Matrix -> Ma
 {-# INLINE multiply #-}
 multiply af mf m1@(Matrix _ c _) m2@(Matrix r _ _)
     | c == r = multiply' af mf m1 m2
-    | otherwise = error $ "multiply: matrix size not match."
+    | otherwise = error "multiply: matrix size not match."
 
 multiply' :: (Int -> Int -> Int) -> (Int -> Int -> Int) -> Matrix -> Matrix -> Matrix
 {-# INLINE multiply' #-}
@@ -131,11 +130,11 @@ power :: (Integral a, Bits a) => (Int -> Int -> Int) -> (Int -> Int -> Int) -> M
 {-# INLINE power #-}
 power af mf m@(Matrix r c _) p
     | r == c = helper m p $ identity r 
-    | otherwise = error $ "power: matrix not squared."
+    | otherwise = error "power: matrix not squared."
     where
         mult = multiply' af mf
         helper _ 0 ret = ret
-        helper a x ret = if ((x .&. 1) == 1)
+        helper a x ret = if (x .&. 1) == 1
             then helper a' x' (mult ret a)
             else helper a' x' ret where
                 a' = mult a a
@@ -149,9 +148,8 @@ mmul :: Int -> Int -> Int -> Int
 {-# INLINE mmul #-}
 mmul m a b = (a * b) `rem` m
 
-bind :: (Integral a, Bits a) => Int -> ((Matrix -> Matrix -> Matrix), (Matrix -> Matrix -> Matrix), (Matrix -> Matrix -> Matrix), (Matrix -> a -> Matrix))
+bind :: (Integral a, Bits a) => Int -> (Matrix -> Matrix -> Matrix, Matrix -> Matrix -> Matrix, Matrix -> Matrix -> Matrix, Matrix -> a -> Matrix)
 bind m = (add (madd m), subtract (madd m), multiply (madd m) (mmul m), power (madd m) (mmul m))
 
-bind' :: (Integral a, Bits a) => ((Matrix -> Matrix -> Matrix), (Matrix -> Matrix -> Matrix), (Matrix -> Matrix -> Matrix), (Matrix -> a -> Matrix))
+bind' :: (Integral a, Bits a) => (Matrix -> Matrix -> Matrix, Matrix -> Matrix -> Matrix, Matrix -> Matrix -> Matrix, Matrix -> a -> Matrix)
 bind'  = (add (+), subtract (+), multiply (+) (*), power (+) (*))
-

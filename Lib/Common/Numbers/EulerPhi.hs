@@ -25,6 +25,7 @@ phi n = loop 1 n primes' where
             divide ph re p = if re `rem` p /= 0
                 then (re, ph)
                 else divide (ph * p) (re `quot` p) p
+    loop _ _ [] = undefined
 
 phiTo :: Int -> [Int]
 phiTo n = elems $ runSTUArray $ do
@@ -41,11 +42,11 @@ phiTo n = elems $ runSTUArray $ do
             writeArray phi i (i - 1)
         phi' <- readArray phi i
         pt' <- R.read pt
-        iterateLoopT 1 $ \j -> do
+        iterateLoopT 1 $ \j -> 
             if' (j > pt') exit $ do
                 p' <- lift $ readArray primes j
                 if' (p' * i > n) exit $ do
                     lift $ writeArray sieve (p' * i) False
-                    lift $ writeArray phi (p' * i) (phi' * (if' (i `rem` p' == 0) p' (p' - 1)))
+                    lift $ writeArray phi (p' * i) (phi' * if' (i `rem` p' == 0) p' (p' - 1))
                     if' (i `rem` p' == 0) exit $ return $ j + 1
     return phi
