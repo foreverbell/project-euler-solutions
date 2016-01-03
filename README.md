@@ -14,13 +14,14 @@ Handle: [foreverbell](https://projecteuler.net/profile/foreverbell.png), friend 
 
 We provide two ways to build one solution.
 
-* ```
+### makefile
+```
 $ make 42
 $ Build/42
 ```
 If ghc is complaining about missing packages, see `project-euler-solutions.cabal.in` and `configure.hs` for more details.
 
-* (recommended) 
+### stack
 ```
 ./configure.hs 42
 stack init
