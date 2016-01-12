@@ -10,7 +10,7 @@ import Data.Array.Unboxed
 import Data.Array.ST
 import Control.Monad.ST
 import Control.Monad (when, forM_)
-import Control.Monad.Trans.Loop (iterateLoopT, exit) -- require control-monad-loops
+import Control.Monad.Trans.Loop (iterateLoopT, exit) 
 import Control.Monad.Trans.Class (lift)
 
 phi :: Int -> Int

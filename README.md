@@ -2,7 +2,7 @@
 
 ## WARNING! SPOILER ALERT!
 
-You may use a search engine like Google to find this place, but please, do **NOT** refer to these codes before you fully solve this problem. Copying others code is cheating and it is meaningless.
+Please, do **NOT** refer to these codes before you fully solve your problem. Copying others code is cheating and it is meaningless.
 
 ## Description
 
@@ -19,11 +19,11 @@ We provide two ways to build one solution.
 $ make 42
 $ Build/42
 ```
-If ghc is complaining about missing packages, see `project-euler-solutions.cabal.in` and `configure.hs` for more details.
+If ghc is complaining about missing packages, see `project-euler-solutions.cabal.in` and `configure` for more details.
 
 ### stack
 ```
-./configure.hs 42
+./configure 42
 stack init
 stack build
 stack exec 42

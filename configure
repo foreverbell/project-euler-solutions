@@ -32,7 +32,7 @@ main = do
   fs <- case args of
              [] -> map (read . dropSuffix) <$> filterDots <$> getDirectoryContents "Src/" :: IO [Int]
              xs -> return $ map read args
-  putStrLn $ printf "found %d hs files." (length fs)
+  putStrLn $ printf "found %d haskell file(s)." (length fs)
   templateIn <- readFile "project-euler-solutions.cabal.in"
   writeFile "project-euler-solutions.cabal" $ templateIn ++ concatMap (\d -> printf template d d packages) (sort fs)
   putStrLn "project-euler-solutions.cabal is successfully generated."
