@@ -25,6 +25,7 @@ library
                        Common.Numbers.Primes
                        Common.NumMod.MkNumMod
                        Common.NumMod.NumMod
+                       Common.Polynomial.Polynomial
                        Common.Ref
                        Common.Util
   ghc-options:         -threaded -O2 -fllvm -W -fwarn-tabs

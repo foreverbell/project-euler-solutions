@@ -7,10 +7,10 @@ module Common.NumMod.MkNumMod (
 import Language.Haskell.TH
 import Data.Vector.Unboxed.Deriving
 
-appmod :: Int -> Exp -> Exp
-appmod n e = UInfixE (ParensE e) modE (LitE (IntegerL $ fromIntegral n))
+apprem :: Int -> Bool -> Exp -> Exp
+apprem n needMod e = UInfixE (ParensE e) remE (LitE (IntegerL $ fromIntegral n))
   where 
-    modE = VarE 'mod
+    remE = if needMod then VarE 'mod else VarE 'rem
 
 inline :: Name -> [Dec] -> [Dec]
 inline name = (:) pragma
@@ -33,13 +33,13 @@ mkVar :: Int -> Name -> Exp
 mkVar n = unwrap n . VarE
 
 mkShow :: Int -> [Dec]
-mkShow n = inline m [ FunD m [ Clause [VarP x] (NormalB $ VarE 'show `AppE` mkVar n x) [] ] ]
+mkShow n = inline m [ FunD m [ Clause [VarP x] (NormalB $ VarE 'show `AppE` apprem n True (mkVar n x)) [] ] ]
   where
     m = mkName "show"
     x = mkName "x"
 
 mkBOp :: Int -> Bool -> Exp -> Name -> [Dec]
-mkBOp n canOverflow0 op opName = inline opName [ FunD opName [ Clause [VarP a, VarP b] (NormalB $ wrap n . dropInteger . appmod n $ UInfixE var1 op var2) [] ] ]
+mkBOp n canOverflow0 op opName = inline opName [ FunD opName [ Clause [VarP a, VarP b] (NormalB $ wrap n . dropInteger . apprem n False $ UInfixE var1 op var2) [] ] ]
   where
     a = mkName "a"
     b = mkName "b"
@@ -65,7 +65,7 @@ mkFromInteger n = inline m [ FunD m [ Clause [VarP a] (NormalB $ wrap n e) [] ] 
   where
     m = mkName "fromInteger"
     a = mkName "a"
-    e = VarE 'fromIntegral `AppE` appmod n (VarE a)
+    e = VarE 'fromIntegral `AppE` apprem n False (VarE a)
 
 -- | mkNumMod True 42 ==== (template haskell) ====>
 --    data Int42 = Int42 { fromInt42 :: {-# UNPACK #-} !Int }
