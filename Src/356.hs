@@ -1,11 +1,16 @@
+{-# LANGUAGE TemplateHaskell, MultiParamTypeClasses, TypeFamilies #-}
 
-import qualified Common.Matrix.Int as M
+import qualified Common.Matrix.Matrix as M
+import           Common.NumMod.MkNumMod
 
-modulo = 10^8 :: Int
-((+.), (-.), (*.), (^.)) = M.bind modulo
+mkNumMod True 100000000
+type Zn = Int100000000
 
-solve n = (((mat ^. (987654321 :: Int)) *. initial) M.! (1, 1)) - 1 where
-    mat = M.fromList 3 3 [0, 1, 0, 0, 0, 1, -n, 0, 2^n]
-    initial = M.fromList 3 1 [3, 2^n, (4^n) `rem` modulo]
+solve :: Integer -> Zn
+solve n = (((mat `M.power` p) `M.multiply` initial) M.! (1, 1)) - 1 
+  where
+    p = 987654321 :: Int
+    mat = M.fromList 3 3 [0, 1, 0, 0, 0, 1, fromInteger $ -n, 0, 2^n]
+    initial = M.fromList 3 1 [3, 2^n, 4^n]
 
-main = print $ (sum [ solve i | i <- [1 .. 30] ]) `mod` modulo
+main = print $ sum [ solve i | i <- [1 .. 30] ]

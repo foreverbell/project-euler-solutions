@@ -19,6 +19,7 @@ packages = intercalate ", " [ "base"
                             , "text"
                             , "time", "parallel", "deepseq"
                             , "data-memocombinators"
+                            , "vector-th-unbox"
                             ]
 
 dropSuffix :: FilePath -> FilePath

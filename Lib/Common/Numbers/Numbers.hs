@@ -2,6 +2,7 @@ module Common.Numbers.Numbers (
     factorial,
     binomial,
     powMod,
+    fastpow,
     exgcd,
     inverse,
     inverse',
@@ -18,6 +19,7 @@ import Control.Monad.Identity
 {-# INLINABLE factorial #-}
 {-# INLINABLE binomial #-}
 {-# INLINABLE powMod #-}
+{-# INLINABLE fastpow #-}
 {-# INLINABLE exgcd #-}
 {-# INLINABLE inverse #-}
 {-# INLINABLE inverse' #-}
@@ -41,6 +43,15 @@ powMod a p m = helper a p m 1 where
         then helper a' p' m (ret * a `rem` m)
         else helper a' p' m ret where
             a' = a * a `rem` m
+            p' = p `shiftR` 1
+
+fastpow :: (Num a, Bits b, Integral b) => a -> b -> a
+fastpow a p = helper a p 1 where
+    helper _ 0 ret = ret
+    helper a p ret = if ((p .&. 1) == 1)
+        then helper a' p' (ret * a)
+        else helper a' p' ret where
+            a' = a * a
             p' = p `shiftR` 1
 
 exgcd :: (Integral a) => a -> a -> (a, a, a)

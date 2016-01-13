@@ -1,28 +1,22 @@
-
-import qualified Common.Matrix.Int as M
+import qualified Common.Matrix.Matrix as M
 import qualified Common.Numbers.Numbers as N
+import           Common.NumMod.NumMod
 
-modulo = 1307674368000
+modulo = 1307674368000 :: Int
 
-add :: Int -> Int -> Int -> Int
-add m a b = (a + b) `rem` m
+fibonacci :: Int -> Int -> IntMod
+fibonacci n m = head $ M.fromList 2 2 (map (fromInt m) [1, 1, 1, 0]) `M.power` (n-1)
+  where
+    head = \m -> m M.! (1, 1)
 
-mul :: Int -> Int -> Int -> Int
-mul m a b = fromInteger $ (toInteger a) * (toInteger b) `rem` (toInteger m)
-
-fibonacci n m = head $ (M.fromList 2 2 [1, 1, 1, 0]) `power` (n - 1) where
-    head m = m M.! (1, 1)
-    power = M.power (add m) (mul m)
-
-fn :: Int -> Int -> Int
-fn n x = nume `div` deno where
-    deno = x * x + x - 1
-    m = modulo * deno
-    nume = ((mul m f1 (power x (n + 2) m)) + (mul m f2 (power x (n + 1) m)) - x) `mod` m
+f :: Int -> Int -> IntMod
+f n x = fromInt modulo $ b `div` a 
+  where
+    m = modulo * a :: Int
+    x' = fromInt m x :: IntMod
+    a = x * x + x - 1 :: Int
+    b = toInt $ f1 * (x' `N.fastpow` (n+2)) + f2 * (x' `N.fastpow` (n+1)) - x'
     f1 = fibonacci n m
     f2 = fibonacci (n + 1) m
-    power a p m = fromInteger $ N.powMod (toInteger a) (toInteger p) (toInteger m)
 
-solve = (sum (map (fn (10^15)) [0 .. 100])) `mod` modulo
-
-main = print solve
+main = print $ sum [ f (10^15) i | i <- [1 .. 100] ]
