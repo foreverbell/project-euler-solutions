@@ -2,10 +2,11 @@
 
 -- TODO: needs profiling to improve performance. 
 {-
- - real	5m38.412s
- - user	5m37.036s
- - sys	0m1.143s
+  real    4m6.950s
+  user    4m5.785s
+  sys     0m1.039s
 -}
+
 
 import qualified Common.Polynomial.Polynomial as P
 import           Common.NumMod.MkNumMod

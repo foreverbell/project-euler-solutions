@@ -67,18 +67,26 @@ mkFromInteger n = inline m [ FunD m [ Clause [VarP a] (NormalB $ wrap n e) [] ] 
     a = mkName "a"
     e = VarE 'fromIntegral `AppE` apprem n False (VarE a)
 
--- | mkNumMod True 42 ==== (template haskell) ====>
---    data Int42 = Int42 { fromInt42 :: {-# UNPACK #-} !Int }
---    instance Show Int42
---    instance Num Int42 (@abs@ and @signum@ are missing because there is no defintion for them)
---    instances for Vector Unbox
+mkUndefined :: Name -> [Dec]
+mkUndefined m = [ FunD m [ Clause [VarP $ mkName "a"] (NormalB $ VarE 'undefined) [] ] ]
+
+mkAbs :: Int -> [Dec]
+mkAbs _ = mkUndefined m
+  where
+    m = mkName "abs"
+
+mkSignum :: Int -> [Dec]
+mkSignum _ = mkUndefined m
+  where
+    m = mkName "signum"
+
 mkNumMod :: Bool -> Int -> DecsQ
 mkNumMod enableUnbox n = do
   let typeName = wrapper n
   let typeNum = DataD [] typeName [] [RecC typeName [(unwrapper n, Unpacked, ConT ''Int)]] []
   let instanceShow = InstanceD [] (ConT ''Show `AppT` ConT typeName) (mkShow n)
   let instanceNum = InstanceD [] (ConT ''Num `AppT` ConT typeName) $ 
-        concatMap (\f -> f n) [mkAddition, mkSubtract, mkMultiply, mkFromInteger]
+        concatMap ($ n) [mkAddition, mkSubtract, mkMultiply, mkFromInteger, mkAbs, mkSignum]
   instanceUnbox <- do
     let var = mkName "x"
     if enableUnbox
@@ -88,3 +96,11 @@ mkNumMod enableUnbox n = do
               (return $ LamE [VarP var] (wrap n (VarE var)))
        else return []
   return $ [typeNum, instanceShow, instanceNum] ++ instanceUnbox
+
+{- mkNumMod True 42 
+     ======>
+   data Int42 = Int42 { fromInt42 :: {-# UNPACK #-} !Int }
+   instance Show Int42
+   instance Num Int42 (@abs@ and @signum@ are set to undefined)
+   instances for Vector Unbox (optional)
+-}

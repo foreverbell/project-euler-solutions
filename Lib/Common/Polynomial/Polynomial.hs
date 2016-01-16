@@ -7,12 +7,8 @@ module Common.Polynomial.Polynomial (
 , karatsubaMultiply
 ) where
 
--- TODO: needs profiling to know why it is so slow.
-
-import           Control.Monad (forM_)
 import           Data.Bits (shiftL, shiftR)
 import qualified Data.Vector.Unboxed as V
-import qualified Data.Vector.Unboxed.Mutable as MV
 
 newtype V.Unbox a => Polynomial a = P (V.Vector a)
   deriving (Show)
@@ -22,6 +18,8 @@ instance (V.Unbox a, Num a) => Num (Polynomial a) where
   (-) (P p1) (P p2) = P $ zipWith_ (-) p1 p2
   (*) p1 p2 = karatsubaMultiply p1 p2
   fromInteger n = fromList [fromInteger n]
+  abs _ = undefined
+  signum _ = undefined
 
 toList :: V.Unbox a => Polynomial a -> [a]
 toList (P p) = V.toList p
@@ -48,23 +46,19 @@ zipWith3_ f p1 p2 p3 = V.generate (maximum (map V.length [p1, p2, p3])) $ \i -> 
 
 naiveMultiply :: (V.Unbox a, Num a) => Polynomial a -> Polynomial a -> Polynomial a
 naiveMultiply (P p1) (P p2) | n == 0 || m == 0 = P V.empty
-                            | otherwise = P $ V.create $ do
-  v <- MV.replicate (n + m - 1) 0
-  forM_ [0 .. n - 1] $ \i -> do
-    let v1 = V.unsafeIndex p1 i
-    forM_ [0 .. m - 1] $ \j -> do
-      let v2 = V.unsafeIndex p2 j
-      let k = i + j
-      old <- MV.unsafeRead v k
-      MV.unsafeWrite v k (old + v1 * v2)
-  return v
+                            | otherwise = P $ V.fromList $
+  flip map [0 .. n + m - 2] $ \k -> do
+    let offset = max 0 (k + 1 - m)
+    V.sum $ V.imap (get offset k) (V.drop offset $ V.take (k + 1) p1)
   where
     n = V.length p1
     m = V.length p2
+    get offset k i v = (V.unsafeIndex p2 j) * v
+      where j = k - i - offset
 
 karatsubaMultiply :: (V.Unbox a, Num a) => Polynomial a -> Polynomial a -> Polynomial a
 karatsubaMultiply (P p1) (P p2) | m == 0 = P V.empty
-                                | n <= 200 = naiveMultiply (P p1) (P p2)
+                                | n <= 250 = naiveMultiply (P p1) (P p2)
                                 | otherwise = P $ V.take deg $ zipWith3_ (\x y z -> x + y + z) sub1 part1 part2
   where
     n = max (V.length p1) (V.length p2)

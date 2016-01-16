@@ -51,6 +51,9 @@ instance Num IntMod where
   fromInteger 1 = IntMod 1 0
   fromInteger _ = undefined
 
+  abs _ = undefined
+  signum _ = undefined
+
 derivingUnbox "IntMod"
   [t| IntMod -> (Int, Int) |]
   [| \(IntMod n m) -> (n, m) |]
