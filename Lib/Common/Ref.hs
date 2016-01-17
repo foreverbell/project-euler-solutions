@@ -1,8 +1,8 @@
 module Common.Ref (
-    Ref (..),
-    R,
-    modify,
-    new
+  Ref (..),
+  R,
+  modify,
+  new
 ) where
 
 import Data.IORef (newIORef, readIORef, writeIORef)
@@ -12,8 +12,8 @@ import Control.Monad (liftM)
 import Prelude hiding (read)
 
 data Ref m a = Ref {
-    write :: a -> m (),
-    read :: m a
+  write :: a -> m (),
+  read :: m a
 }
 
 modify :: R m => Ref m a -> (a -> a) -> m ()
@@ -23,11 +23,10 @@ newRef :: R m => (a -> m ref) -> (ref -> a -> m ()) -> (ref -> m a) -> a -> m (R
 newRef nw wr rd = liftM (\r -> Ref (wr r) (rd r)) . nw
 
 class Monad m => R m where
-    new :: a -> m (Ref m a)
+  new :: a -> m (Ref m a)
 
 instance R IO where
-    new = newRef newIORef writeIORef readIORef
+  new = newRef newIORef writeIORef readIORef
 
 instance R (ST s) where
-    new = newRef newSTRef writeSTRef readSTRef
-
+  new = newRef newSTRef writeSTRef readSTRef
