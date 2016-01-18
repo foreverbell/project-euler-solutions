@@ -2,6 +2,7 @@ module Common.Numbers.Primes (
   primes
 , primes'
 , primesTo
+, isPrimeTableTo
 , testPrime
 , countPrimeApprox
 , countPrime
@@ -32,7 +33,10 @@ primes' :: [Int]
 primes' = 2 : filter testPrime [3, 5 .. ]
 
 primesTo :: Int -> [Int]
-primesTo m = map fst $ filter snd $ zip [2 .. ] $ V.toList $ V.drop 2 $ V.create $ do
+primesTo m = map fst $ filter snd $ zip [2 .. ] $ V.toList $ V.drop 2 $ isPrimeTableTo m
+
+isPrimeTableTo :: Int -> V.Vector Bool
+isPrimeTableTo m = V.create $ do
   sieve <- MV.replicate (m + 1) True
   let root = isqrt m
   forM_ [2 .. root] $ \i -> do
