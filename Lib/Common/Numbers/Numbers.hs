@@ -12,9 +12,9 @@ module Common.Numbers.Numbers (
 , crt
 ) where
 
-import Data.Bits (Bits, (.&.), shiftR)
-import qualified Data.Array as A
-import Control.Monad.Identity
+import qualified Data.Vector as V
+import           Data.Bits (Bits, (.&.), shiftR)
+import           Control.Monad.Identity
 
 {-# INLINABLE factorial #-}
 {-# INLINABLE binomial #-}
@@ -82,12 +82,12 @@ inverse' x m = if d /= 1
     (d, a, _) = exgcd x m
 
 inverseToM :: (Monad m, Integral a) => Int -> a -> [m a]
-inverseToM n m = A.elems cache 
+inverseToM n m = V.toList cache 
   where
-    cache = A.listArray (0, n) $ fail "undefined" : return 1 : map inv [2 .. n]
+    cache = V.fromList $ fail "undefined" : return 1 : map inv [2 .. n]
     inv x = do
       let (q, r) = m `quotRem` fromIntegral x
-      y <- cache A.! fromIntegral r
+      y <- cache V.! fromIntegral r
       return $ y * (m - q) `rem` m
 
 inverseTo :: (Integral a) => Int -> a -> [a]

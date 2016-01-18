@@ -8,7 +8,7 @@ copyright:           2015 foreverbell
 category:            Math
 build-type:          Simple
 cabal-version:       >=1.10
-tested-with:         GHC==7.10.2
+tested-with:         GHC==7.10.3
 
 library
   hs-source-dirs:      Lib
@@ -28,7 +28,6 @@ library
                        Common.Util
   ghc-options:         -threaded -O2 -fllvm -W -fwarn-tabs
   build-depends:       base >= 4.7 && < 5
-                     , array
                      , containers
                      , vector
                      , text

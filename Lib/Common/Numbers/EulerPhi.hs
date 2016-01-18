@@ -3,15 +3,14 @@ module Common.Numbers.EulerPhi (
 , phiTo
 ) where
 
-import Common.Util (if')
-import Common.Numbers.Primes (primes', countPrimeApprox)
+import           Common.Util (if')
+import           Common.Numbers.Primes (primes', countPrimeApprox)
 import qualified Common.Ref as R
-import Data.Array.Unboxed
-import Data.Array.ST
-import Control.Monad.ST
-import Control.Monad (when, forM_)
-import Control.Monad.Trans.Loop (iterateLoopT, exit) 
-import Control.Monad.Trans.Class (lift)
+import           Control.Monad (when, forM_)
+import           Control.Monad.Trans.Loop (iterateLoopT, exit) 
+import           Control.Monad.Trans.Class (lift)
+import qualified Data.Vector.Unboxed.Mutable as MV
+import qualified Data.Vector.Unboxed as V
 
 phi :: Int -> Int
 phi n = loop 1 n primes' 
@@ -30,25 +29,25 @@ phi n = loop 1 n primes'
     loop _ _ [] = undefined
 
 phiTo :: Int -> [Int]
-phiTo n = elems $ runSTUArray $ do
+phiTo n = tail $ V.toList $ V.create $ do
   pt <- R.new (0 :: Int)
-  sieve <- newArray (2, n) True :: ST s (STUArray s Int Bool)
-  primes <- newArray (1, countPrimeApprox n) 0 :: ST s (STUArray s Int Int)
-  phi <- newArray (1, n) 1
+  sieve <- MV.replicate (n + 1) True
+  primes <- MV.replicate (1 + countPrimeApprox n) (0 :: Int)
+  phi <- MV.replicate (n + 1) (1 :: Int)
   forM_ [2 .. n] $ \i -> do
-    isPrime <- readArray sieve i
+    isPrime <- MV.unsafeRead sieve i
     when isPrime $ do
       R.modify pt (+ 1) 
       pt' <- R.read pt
-      writeArray primes pt' i
-      writeArray phi i (i - 1)
-    phi' <- readArray phi i
+      MV.unsafeWrite primes pt' i
+      MV.unsafeWrite phi i (i - 1)
+    phi' <- MV.unsafeRead phi i
     pt' <- R.read pt
     iterateLoopT 1 $ \j -> 
       if' (j > pt') exit $ do
-        p' <- lift $ readArray primes j
+        p' <- lift $ MV.unsafeRead primes j
         if' (p' * i > n) exit $ do
-          lift $ writeArray sieve (p' * i) False
-          lift $ writeArray phi (p' * i) (phi' * if' (i `rem` p' == 0) p' (p' - 1))
+          lift $ MV.unsafeWrite sieve (p' * i) False
+          lift $ MV.unsafeWrite phi (p' * i) (phi' * if' (i `rem` p' == 0) p' (p' - 1))
           if' (i `rem` p' == 0) exit $ return $ j + 1
   return phi
