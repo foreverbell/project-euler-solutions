@@ -12,15 +12,13 @@ tested-with:         GHC==7.10.2
 
 library
   hs-source-dirs:      Lib
-  exposed-modules:     Common.Array.Array
-                       Common.Array.Unboxed.Vector
-                       Common.Array.Vector
-                       Common.DataStructure.Fenwick
+  exposed-modules:     Common.DataStructure.Fenwick
                        Common.DataStructure.UnionFind
                        Common.List
                        Common.MapReduce
                        Common.Matrix.Matrix
                        Common.Numbers.EulerPhi
+                       Common.Numbers.InfiniteSequence
                        Common.Numbers.Numbers
                        Common.Numbers.Primes
                        Common.NumMod.MkNumMod

@@ -1,9 +1,9 @@
 module Common.Util (
-    if',
-    (?),
-    isqrt,
-    submasks,
-    combmasks
+  if'
+, (?)
+, isqrt
+, submasks
+, combmasks
 ) where
 
 import Data.Bits
@@ -11,8 +11,8 @@ import Data.Bits
 if' :: Bool -> t -> t -> t
 {-# INLINE if' #-}
 if' p a b = if p 
-    then a 
-    else b
+  then a 
+  else b
 
 infixl 2 ?
 {-# INLINE (?) #-}

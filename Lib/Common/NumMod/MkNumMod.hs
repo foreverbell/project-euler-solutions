@@ -68,7 +68,7 @@ mkFromInteger n = inline m [ FunD m [ Clause [VarP a] (NormalB $ wrap n e) [] ] 
     e = VarE 'fromIntegral `AppE` apprem n False (VarE a)
 
 mkUndefined :: Name -> [Dec]
-mkUndefined m = [ FunD m [ Clause [VarP $ mkName "a"] (NormalB $ VarE 'undefined) [] ] ]
+mkUndefined m = [ FunD m [ Clause [WildP] (NormalB $ VarE 'undefined) [] ] ]
 
 mkAbs :: Int -> [Dec]
 mkAbs _ = mkUndefined m

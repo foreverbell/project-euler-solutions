@@ -17,7 +17,7 @@ packages = intercalate ", " [ "base"
                             , "project-euler-solutions"
                             , "array", "vector", "containers"
                             , "text"
-                            , "time", "parallel", "deepseq"
+                            , "time", "parallel", "deepseq", "primitive"
                             , "data-memocombinators"
                             , "vector-th-unbox"
                             ]

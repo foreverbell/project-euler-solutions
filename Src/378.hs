@@ -1,66 +1,79 @@
+{-# LANGUAGE TemplateHaskell, MultiParamTypeClasses, TypeFamilies #-}
 
-import Control.Monad (forM_, when)
-import Data.Array.Unboxed
-import Data.Array.ST
-import Control.Monad.ST
-import Data.List (zipWith4, foldl')
+-- TODO: ~15 minutes, needs profiling
+
+import           Control.Monad (forM_, when)
+import           Control.Monad.ST (runST, ST)
+import           Control.Monad.Primitive
+import qualified Data.Vector.Unboxed as V
+import qualified Data.Vector.Unboxed.Mutable as MV
 import qualified Common.DataStructure.Fenwick as F
+import           Common.NumMod.MkNumMod
 
-m = 10^18
-foldMod a b = (a + b) `mod` m
+import           Prelude hiding (read)
 
-eratos :: Int -> UArray Int Int
-eratos n = runSTUArray $ do
-    isPrime <- newListArray (1, n) (repeat True) :: ST s (STUArray s Int Bool)
-    minPrimePart <- newListArray (1, n) [1 .. n] :: ST s (STUArray s Int Int)
-    sumOfDivisors <- newListArray (1, n) (repeat 2) :: ST s (STUArray s Int Int)
-    writeArray sumOfDivisors 1 1
-    forM_ [2 .. n] $ \i -> do
-        prime <- readArray isPrime i
-        when prime $ do
-            forM_ [i^2, i^2 + i .. n] $ \j -> do
-                prime' <- readArray isPrime j
-                when prime' $ do
-                    writeArray isPrime j False
-                    let q = j `div` i
-                    minPrime' <- readArray minPrimePart q
-                    if (minPrime' `mod` i == 0)
-                        then writeArray minPrimePart j (minPrime' * i)
-                        else writeArray minPrimePart j i
-                    d1 <- readArray minPrimePart j
-                    when (d1 == j) $ do
-                        s <- readArray sumOfDivisors q
-                        writeArray sumOfDivisors j (s + 1)
-    forM_ [2 .. n] $ \i -> do
-        d1 <- readArray minPrimePart i
-        let d2 = i `div` d1
-        when (d1 /= i) $ do
-            s1 <- readArray sumOfDivisors d1
-            s2 <- readArray sumOfDivisors d2
-            writeArray sumOfDivisors i (s1 * s2)
-    return sumOfDivisors
+mkNumMod True 1000000000000000000
+type Zn = Int1000000000000000000
 
-buildDT :: Int -> UArray Int Int
-buildDT n = runSTUArray $ do
-    ret <- newListArray (1, n) (repeat 0)
-    let d = eratos (n + 1)
-    forM_ [1, 3 .. n] $ \i -> writeArray ret i $ (d!i) * (d!((i + 1) `div` 2))
-    forM_ [2, 4 .. n] $ \i -> writeArray ret i $ (d!(i `div` 2)) * (d!(i + 1))
-    return ret
+(!) = (V.!)
 
-solve :: Int -> Int
-solve n = result where
-    dT = buildDT n
-    maxd = foldl' (\r i -> max r (dT!i)) 0 [1 .. n]
-    result = runST $ do
-        dp1 <- newArray (0, maxd) 0 :: ST s (STUArray s Int Int)
-        dp2 <- newArray (0, maxd) 0 :: ST s (STUArray s Int Int)
-        dp3 <- newArray (0, maxd) 0 :: ST s (STUArray s Int Int)
-        forM_ [1 .. n] $ \i -> do
-            let d = dT!i
-            F.modify foldMod dp1 maxd d 1
-            (F.askLR foldMod dp1 (d + 1) maxd) >>= (F.modify foldMod dp2 maxd d)
-            (F.askLR foldMod dp2 (d + 1) maxd) >>= (F.modify foldMod dp3 maxd d)
-        F.ask foldMod dp3 maxd
+read :: (PrimMonad m, MV.Unbox a) => MV.MVector (PrimState m) a -> Int -> m a
+read = MV.unsafeRead
 
-main = print $ solve 60000000
+write :: (PrimMonad m, MV.Unbox a) => MV.MVector (PrimState m) a -> Int -> a -> m () 
+write = MV.unsafeWrite
+
+eratos :: Int -> V.Vector Int
+eratos n = V.create $ do
+  isPrime <- MV.replicate (n + 1) True
+  minPrimePart <- V.thaw $ V.fromList [0 .. n] 
+  sumOfDivisors <- MV.replicate (n + 1) 2
+  write sumOfDivisors 1 1
+  forM_ [2 .. n] $ \i -> do
+    prime <- read isPrime i
+    when prime $ 
+      forM_ [i^2, i^2 + i .. n] $ \j -> do
+        prime' <- read isPrime j
+        when prime' $ do
+          write isPrime j False
+          let q = j `div` i
+          minPrime' <- read minPrimePart q
+          if minPrime' `mod` i == 0
+            then write minPrimePart j (minPrime' * i)
+            else write minPrimePart j i
+          d1 <- read minPrimePart j
+          when (d1 == j) $ do
+            s <- read sumOfDivisors q
+            write sumOfDivisors j (s + 1)
+  forM_ [2 .. n] $ \i -> do
+    d1 <- read minPrimePart i
+    let d2 = i `div` d1
+    when (d1 /= i) $ do
+      s1 <- read sumOfDivisors d1
+      s2 <- read sumOfDivisors d2
+      write sumOfDivisors i (s1 * s2)
+  return sumOfDivisors
+
+buildDT :: Int -> V.Vector Int
+buildDT n = V.fromList $ map f [0 .. n]
+  where
+    d = eratos (n + 1)
+    f 0 = 0
+    f i | odd i = (d!i) * (d!((i + 1) `div` 2))
+        | otherwise = (d!(i `div` 2)) * (d!(i + 1))
+
+solve :: Int -> Zn
+solve n = runST $ do
+  let dT = buildDT n
+  let maxd = V.maximum dT
+  dp1 <- F.make maxd :: ST s (F.Fenwick (ST s) Zn)
+  dp2 <- F.make maxd
+  dp3 <- F.make maxd
+  V.forM_ (V.drop 1 dT) $ \d -> do
+    F.modify dp1 (+) d 1
+    F.askLR dp1 (+) (d + 1) maxd >>= F.modify dp2 (+) d
+    F.askLR dp2 (+) (d + 1) maxd >>= F.modify dp3 (+) d
+  F.ask dp3 (+) maxd
+
+main :: IO ()
+main = print $ solve 60000000 

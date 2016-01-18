@@ -1,51 +1,43 @@
-{-# LANGUAGE FlexibleContexts, FlexibleInstances #-}
+{-# LANGUAGE FlexibleContexts, FlexibleInstances, RankNTypes #-}
 
 module Common.DataStructure.UnionFind (
-    UFSet(..),
-    display,
-    make,
-    find,
-    union
+  UFSet
+, make
+, find
+, union
 ) where
 
+import           Control.Monad (liftM2)
+import           Control.Monad.Primitive
 import qualified Common.Ref as R
-import qualified Data.Array.MArray as MA
-import Control.Monad (liftM2)
+import qualified Data.Vector.Unboxed as V
+import qualified Data.Vector.Unboxed.Mutable as MV
 
-data UFSet a m = UFSet {
-    ufsSize :: R.Ref m Int,
-    ufsRange :: (Int, Int),
-    ufsSet :: a Int Int
+data PrimMonad m => UFSet m = UFSet {
+  ufsSize :: R.Ref m Int,
+  ufsSet :: MV.MVector (PrimState m) Int
 }
 
-display :: (MA.MArray a Int m) => UFSet a m -> m String
-display ufs = do
-    size <- R.read $ ufsSize ufs
-    let range@(l, r) = ufsRange ufs
-    let set = ufsSet ufs
-    elems <- mapM (MA.readArray set) [l .. r]
-    return $ show (size, range, zip [l .. r] elems)
+make :: (PrimMonad m, R.R m) => Int -> m (UFSet m) 
+make n = liftM2 UFSet (R.new n) (V.thaw $ V.fromList [0 .. n - 1])
 
-make :: (MA.MArray a Int m, R.R m) => (Int, Int) -> m (UFSet a m) 
-make (l, r) = liftM2 (\s a -> UFSet s (l, r) a) (R.new (r - l + 1)) (MA.newListArray (l, r) [l .. r])
-
-find :: (MA.MArray a Int m) => UFSet a m -> Int -> m Int
+find :: (PrimMonad m) => UFSet m -> Int -> m Int
 find ufs u = do
-    father <- MA.readArray (ufsSet ufs) u
-    if u == father
-        then return u
-        else do
-            father' <- find ufs father
-            MA.writeArray (ufsSet ufs) u father'
-            return father'
+  f <- MV.unsafeRead (ufsSet ufs) u
+  if u == f
+    then return u
+    else do
+      f' <- find ufs f
+      MV.unsafeWrite (ufsSet ufs) u f'
+      return f'
 
-union :: (MA.MArray a Int m, R.R m) => UFSet a m -> Int -> Int -> m Bool
+union :: (PrimMonad m, R.R m) => UFSet m -> Int -> Int -> m Bool
 union ufs u v = do
-    u' <- find ufs u
-    v' <- find ufs v
-    if u' /= v'
-        then do
-            MA.writeArray (ufsSet ufs) u' v' 
-            R.modify (ufsSize ufs) pred
-            return True
-        else return False
+  u' <- find ufs u
+  v' <- find ufs v
+  if u' /= v'
+    then do
+      MV.unsafeWrite (ufsSet ufs) u' v' 
+      R.modify (ufsSize ufs) pred
+      return True
+    else return False

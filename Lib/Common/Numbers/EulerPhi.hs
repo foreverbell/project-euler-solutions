@@ -1,6 +1,6 @@
 module Common.Numbers.EulerPhi (
-  phi,
-  phiTo
+  phi
+, phiTo
 ) where
 
 import Common.Util (if')

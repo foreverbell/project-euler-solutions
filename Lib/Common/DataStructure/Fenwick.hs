@@ -1,31 +1,40 @@
 module Common.DataStructure.Fenwick (
-    ask,
-    askLR,
-    modify
+  Fenwick
+, make
+, ask
+, askLR
+, modify
 ) where
 
-import Data.Bits
-import Data.Array.MArray
-import Data.Array.Base (unsafeRead, unsafeWrite)
-import Data.List (foldl')
-import Control.Monad (liftM, liftM2, forM_)
+import           Control.Monad (liftM, liftM2, forM_)
+import           Control.Monad.Primitive
+import           Data.Bits ((.&.))
+import           Data.List (foldl')
+import qualified Data.Vector.Unboxed.Mutable as MV
 
+newtype (PrimMonad m, Num e, MV.Unbox e) => Fenwick m e = Fenwick (MV.MVector (PrimState m) e)
+
+{-# INLINABLE make #-}
 {-# INLINABLE ask #-}
 {-# INLINABLE askLR #-}
 {-# INLINABLE modify #-}
 
-ask :: (Num e, MArray a e m) => (e -> e -> e) -> a Int e -> Int -> m e
+make :: (PrimMonad m, Num e, MV.Unbox e) => Int -> m (Fenwick m e)
+make n = liftM Fenwick (MV.replicate (n + 1) 0)
+
+ask :: (PrimMonad m, Num e, MV.Unbox e) => Fenwick m e -> (e -> e -> e) -> Int -> m e
 ask _ _ 0 = return 0
-ask f fenwick x = liftM (foldl' f 0) $ mapM (unsafeRead fenwick) xs where
-    xs = takeWhile (> 0) $ x : map (\x -> x - (x .&. (-x))) xs
+ask (Fenwick fenwick) f x = liftM (foldl' f 0) $ mapM (MV.unsafeRead fenwick) xs 
+  where
+    xs = takeWhile (> 0) $ iterate (\x -> x - (x .&. (-x))) x
 
-askLR :: (Num e, MArray a e m) => (e -> e -> e) -> a Int e -> Int -> Int -> m e
-askLR f fenwick l r = if l <= r
-    then liftM2 f (ask f fenwick r) (liftM negate (ask f fenwick (l - 1)))
-    else return 0
+askLR :: (PrimMonad m, Num e, MV.Unbox e) => Fenwick m e -> (e -> e -> e) -> Int -> Int -> m e
+askLR fenwick f l r 
+  | l <= r = liftM2 f (ask fenwick f r) (liftM negate (ask fenwick f (l - 1)))
+  | otherwise = return 0
 
-modify :: (Num e, MArray a e m) => (e -> e -> e) -> a Int e -> Int -> Int -> e -> m ()
-modify f fenwick n x d = forM_ xs $ \i -> do 
-    v' <- unsafeRead fenwick i
-    unsafeWrite fenwick i (f v' d) where
-        xs = takeWhile (<= n) $ x : map (\x -> x + (x .&. (-x))) xs
+modify :: (PrimMonad m, Num e, MV.Unbox e) => Fenwick m e -> (e -> e -> e) -> Int -> e -> m ()
+modify (Fenwick fenwick) f x d = forM_ xs $ \i -> MV.unsafeModify fenwick (f d) i
+  where
+    xs = takeWhile (<= n) $ iterate (\x -> x + (x .&. (-x))) x
+    n = MV.length fenwick - 1

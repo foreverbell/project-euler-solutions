@@ -1,15 +1,15 @@
 module Common.Numbers.Numbers (
-  factorial,
-  binomial,
-  powMod,
-  fastpow,
-  exgcd,
-  inverse,
-  inverse',
-  inverseToM,
-  inverseTo,
-  crt2,
-  crt
+  factorial
+, binomial
+, powMod
+, fastpow
+, exgcd
+, inverse
+, inverse'
+, inverseToM
+, inverseTo
+, crt2
+, crt
 ) where
 
 import Data.Bits (Bits, (.&.), shiftR)

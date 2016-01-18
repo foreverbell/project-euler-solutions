@@ -1,9 +1,9 @@
 module Common.Ref (
-  Ref (..),
-  R,
-  modify,
-  new
-) where
+  Ref (..)
+, R
+, modify
+, new
+  ) where
 
 import Data.IORef (newIORef, readIORef, writeIORef)
 import Data.STRef (newSTRef, readSTRef, writeSTRef)

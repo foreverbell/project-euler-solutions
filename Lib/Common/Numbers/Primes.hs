@@ -1,11 +1,11 @@
 module Common.Numbers.Primes (
-  primes,
-  primes',
-  primesTo, 
-  testPrime,
-  countPrimeApprox,
-  countPrime,
-  countPrime'
+  primes
+, primes'
+, primesTo
+, testPrime
+, countPrimeApprox
+, countPrime
+, countPrime'
 ) where
 
 import           Control.Monad (forM_, when)
