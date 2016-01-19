@@ -2,7 +2,7 @@ module Common.Numbers.Primes (
   primes
 , primes'
 , primesTo
-, isPrimeTableTo
+, primesTo'
 , testPrime
 , countPrimeApprox
 , countPrime
@@ -10,10 +10,14 @@ module Common.Numbers.Primes (
 ) where
 
 import           Control.Monad (forM_, when)
+import           Control.Monad.ST (runST)
+import           Control.Monad.Trans.Class (lift)
+import           Control.Monad.Trans.Loop (iterateLoopT, exit) 
 import qualified Data.Vector.Unboxed as V
 import qualified Data.Vector.Unboxed.Mutable as MV
 import           Data.Bits (shiftR, (.&.))
 import           Common.Numbers.Numbers (powMod)
+import qualified Common.MonadRef as R
 import           Common.Util (isqrt, if')
 
 primes :: Integral a => [a]
@@ -33,36 +37,51 @@ primes' :: [Int]
 primes' = 2 : filter testPrime [3, 5 .. ]
 
 primesTo :: Int -> [Int]
-primesTo m = map fst $ filter snd $ zip [2 .. ] $ V.toList $ V.drop 2 $ isPrimeTableTo m
+primesTo = V.toList . snd . primesTo'
 
-isPrimeTableTo :: Int -> V.Vector Bool
-isPrimeTableTo m = V.create $ do
-  sieve <- MV.replicate (m + 1) True
-  let root = isqrt m
-  forM_ [2 .. root] $ \i -> do
+primesTo' :: Int -> (V.Vector Bool, V.Vector Int)
+primesTo' n = runST $ do
+  pt <- R.new (0 :: Int)
+  sieve <- MV.replicate (n + 1) True
+  primes <- MV.replicate (countPrimeApprox n + 1) (0 :: Int)
+  MV.unsafeWrite sieve 0 False
+  MV.unsafeWrite sieve 1 False
+  forM_ [2 .. n] $ \i -> do
     isPrime <- MV.unsafeRead sieve i
-    when isPrime $ forM_ [i^2, i^2+i .. m] $ \j -> MV.unsafeWrite sieve j False
-  return sieve
+    when isPrime $ do
+      pt' <- R.modify pt (+ 1)
+      MV.unsafeWrite primes pt' i
+    pt' <- R.read pt
+    iterateLoopT 1 $ \j -> 
+      if' (j > pt') exit $ do
+        p' <- lift $ MV.unsafeRead primes j
+        if' (p' * i > n) exit $ do
+          lift $ MV.unsafeWrite sieve (p' * i) False
+          if' (i `rem` p' == 0) exit (return $ j + 1)
+  ptv <- R.read pt
+  sieve' <- V.unsafeFreeze sieve
+  primes' <- V.unsafeFreeze primes
+  return (sieve', V.force $ V.slice 1 ptv primes')
 
 primes10k = primesTo 10000
 
 -- prime test 
 millerRabinTest :: Int -> Int -> Bool
 millerRabinTest n b = ((p == 1) || (p == n - 1) || (n == b)) || ((n `rem` b /= 0) && rec cnt p)
-    where
-      tail0 x cnt = if (x .&. 1) == 1 
-        then (x, cnt)
-        else tail0 (x `shiftR` 1) (cnt + 1)
-      (m, cnt) = tail0 (n - 1) 0
-      p = if n < 2^31
-        then powMod b m n
-        else fromIntegral $ powMod (toInteger b) (toInteger m) (toInteger n)
-      rec 0 _ = False
-      rec cnt p = (p2 == n - 1) || rec (cnt - 1) p2 
-        where
-          p2 = if p < 2^31
-              then p^2 `rem` n
-              else fromIntegral $ (toInteger p)^2 `rem` (toInteger n)
+  where
+    tail0 x cnt = if (x .&. 1) == 1 
+      then (x, cnt)
+      else tail0 (x `shiftR` 1) (cnt + 1)
+    (m, cnt) = tail0 (n - 1) 0
+    p = if n < 2^31
+      then powMod b m n
+      else fromIntegral $ powMod (toInteger b) (toInteger m) (toInteger n)
+    rec 0 _ = False
+    rec cnt p = (p2 == n - 1) || rec (cnt - 1) p2 
+      where
+        p2 = if p < 2^31
+            then p^2 `rem` n
+            else fromIntegral $ (toInteger p)^2 `rem` (toInteger n)
 
 naiveTest :: Int -> Bool
 naiveTest n = all (\d -> n `rem` d /= 0) $ takeWhile (<= root) primes10k

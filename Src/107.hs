@@ -1,6 +1,6 @@
 import Control.Monad
 import Control.Monad.ST
-import qualified Common.Ref as R
+import qualified Common.MonadRef as R
 import qualified Common.DataStructure.UnionFind as UF
 import Data.List (sortBy)
 import Data.Function (on)

@@ -3,7 +3,7 @@ import Data.Array.ST
 import Control.Monad (forM_)
 import Control.Monad.ST
 import Common.Util (isqrt)
-import qualified Common.Ref as R
+import qualified Common.MonadRef as R
 
 solve :: Int -> Int
 solve n = dp ! (n, 1) where

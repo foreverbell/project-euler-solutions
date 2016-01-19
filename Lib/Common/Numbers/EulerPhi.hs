@@ -5,7 +5,7 @@ module Common.Numbers.EulerPhi (
 
 import           Common.Util (if')
 import           Common.Numbers.Primes (primes', countPrimeApprox)
-import qualified Common.Ref as R
+import qualified Common.MonadRef as R
 import           Control.Monad (when, forM_)
 import           Control.Monad.Trans.Loop (iterateLoopT, exit) 
 import           Control.Monad.Trans.Class (lift)
@@ -32,13 +32,12 @@ phiTo :: Int -> [Int]
 phiTo n = tail $ V.toList $ V.create $ do
   pt <- R.new (0 :: Int)
   sieve <- MV.replicate (n + 1) True
-  primes <- MV.replicate (1 + countPrimeApprox n) (0 :: Int)
+  primes <- MV.replicate (countPrimeApprox n + 1) (0 :: Int)
   phi <- MV.replicate (n + 1) (1 :: Int)
   forM_ [2 .. n] $ \i -> do
     isPrime <- MV.unsafeRead sieve i
     when isPrime $ do
-      R.modify pt (+ 1) 
-      pt' <- R.read pt
+      pt' <- R.modify pt (+ 1) 
       MV.unsafeWrite primes pt' i
       MV.unsafeWrite phi i (i - 1)
     phi' <- MV.unsafeRead phi i

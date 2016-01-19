@@ -2,6 +2,8 @@ name:                project-euler-solutions
 version:             0.1.0.0
 synopsis:            Project Euler solutions in Haskell
 homepage:            http://github.com/foreverbell/project-euler-solutions
+license:             BSD3
+license-file:        LICENSE
 author:              foreverbell
 maintainer:          dql.foreverbell@gmail.com 
 copyright:           2015 foreverbell
@@ -17,6 +19,7 @@ library
                        Common.List
                        Common.MapReduce
                        Common.Matrix.Matrix
+                       Common.MonadRef
                        Common.Numbers.EulerPhi
                        Common.Numbers.InfiniteSequence
                        Common.Numbers.Numbers
@@ -24,7 +27,6 @@ library
                        Common.NumMod.MkNumMod
                        Common.NumMod.NumMod
                        Common.Polynomial.Polynomial
-                       Common.Ref
                        Common.Util
   ghc-options:         -threaded -O2 -fllvm -W -fwarn-tabs
   build-depends:       base >= 4.7 && < 5

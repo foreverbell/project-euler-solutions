@@ -9,7 +9,7 @@ module Common.DataStructure.UnionFind (
 
 import           Control.Monad (liftM2)
 import           Control.Monad.Primitive
-import qualified Common.Ref as R
+import qualified Common.MonadRef as R
 import qualified Data.Vector.Unboxed as V
 import qualified Data.Vector.Unboxed.Mutable as MV
 
@@ -18,7 +18,7 @@ data PrimMonad m => UFSet m = UFSet {
   ufsSet :: MV.MVector (PrimState m) Int
 }
 
-make :: (PrimMonad m, R.R m) => Int -> m (UFSet m) 
+make :: (PrimMonad m, R.MonadRef m) => Int -> m (UFSet m) 
 make n = liftM2 UFSet (R.new n) (V.thaw $ V.fromList [0 .. n - 1])
 
 find :: (PrimMonad m) => UFSet m -> Int -> m Int
@@ -31,7 +31,7 @@ find ufs u = do
       MV.unsafeWrite (ufsSet ufs) u f'
       return f'
 
-union :: (PrimMonad m, R.R m) => UFSet m -> Int -> Int -> m Bool
+union :: (PrimMonad m, R.MonadRef m) => UFSet m -> Int -> Int -> m Bool
 union ufs u v = do
   u' <- find ufs u
   v' <- find ufs v
