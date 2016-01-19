@@ -1,39 +1,41 @@
+{-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies #-}
+
 module Common.MonadRef (
-  Ref (..)
-, MonadRef
-, new
-, modify
-, modify'
+  MonadRef (..)
 ) where
 
 import Control.Monad.ST (ST)
-import Control.Monad (liftM)
-import Data.IORef (newIORef, readIORef, writeIORef, modifyIORef, modifyIORef')
-import Data.STRef (newSTRef, readSTRef, writeSTRef, modifySTRef, modifySTRef')
+import Control.Monad (void)
+import Data.IORef (IORef, newIORef, readIORef, writeIORef, modifyIORef, modifyIORef')
+import Data.STRef (STRef, newSTRef, readSTRef, writeSTRef, modifySTRef, modifySTRef')
 
 import Prelude hiding (read)
 
-data Ref m a = Ref {
-  write :: a -> m ()
-, read :: m a
-, modify_ :: (a -> a) -> m ()
-, modify_' :: (a -> a) -> m ()
-}
+class Monad m => MonadRef r m | m -> r where
+  {-# MINIMAL new, read, write, (modify_ | modify), (modify_' | modify') #-}
 
-class Monad m => MonadRef m where
-  new :: a -> m (Ref m a)
+  new :: a -> m (r a)
+  read :: r a -> m a
+  write :: r a -> a -> m ()
 
-newRef :: MonadRef m => (a -> m ref) -> (ref -> a -> m ()) -> (ref -> m a) -> (ref -> (a -> a) -> m ()) -> (ref -> (a -> a) -> m ()) -> a -> m (Ref m a)
-newRef n w r m m' = liftM (\ref -> Ref (w ref) (r ref) (m ref) (m' ref)) . n
+  modify_, modify_' :: r a -> (a -> a) -> m ()
+  modify_ r f = void $ modify r f
+  modify_' r f = void $ modify' r f
 
-instance MonadRef IO where
-  new = newRef newIORef writeIORef readIORef modifyIORef modifyIORef'
+  modify, modify' :: r a -> (a -> a) -> m a
+  modify r f = modify_ r f >> read r
+  modify' r f = modify_' r f >> read r
 
-instance MonadRef (ST s) where
-  new = newRef newSTRef writeSTRef readSTRef modifySTRef modifySTRef'
+instance MonadRef IORef IO where
+  new = newIORef
+  read = readIORef
+  write = writeIORef
+  modify_ = modifyIORef 
+  modify_' = modifyIORef'
 
-modify :: MonadRef m => (Ref m a) -> (a -> a) -> m a
-modify r f = modify_ r f >> read r
-
-modify' :: MonadRef m => (Ref m a) -> (a -> a) -> m a
-modify' r f = modify_' r f >> read r
+instance MonadRef (STRef s) (ST s) where
+  new = newSTRef
+  read = readSTRef
+  write = writeSTRef 
+  modify_ = modifySTRef
+  modify_' = modifySTRef'

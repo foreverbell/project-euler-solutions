@@ -13,15 +13,15 @@ import qualified Common.MonadRef as R
 import qualified Data.Vector.Unboxed as V
 import qualified Data.Vector.Unboxed.Mutable as MV
 
-data PrimMonad m => UFSet m = UFSet {
-  ufsSize :: R.Ref m Int,
+data (PrimMonad m, R.MonadRef r m) => UFSet r m = UFSet {
+  ufsSize :: r Int,
   ufsSet :: MV.MVector (PrimState m) Int
 }
 
-make :: (PrimMonad m, R.MonadRef m) => Int -> m (UFSet m) 
+make :: (PrimMonad m, R.MonadRef r m) => Int -> m (UFSet r m) 
 make n = liftM2 UFSet (R.new n) (V.thaw $ V.fromList [0 .. n - 1])
 
-find :: (PrimMonad m) => UFSet m -> Int -> m Int
+find :: (PrimMonad m, R.MonadRef r m) => UFSet r m -> Int -> m Int
 find ufs u = do
   f <- MV.unsafeRead (ufsSet ufs) u
   if u == f
@@ -31,7 +31,7 @@ find ufs u = do
       MV.unsafeWrite (ufsSet ufs) u f'
       return f'
 
-union :: (PrimMonad m, R.MonadRef m) => UFSet m -> Int -> Int -> m Bool
+union :: (PrimMonad m, R.MonadRef r m) => UFSet r m -> Int -> Int -> m Bool
 union ufs u v = do
   u' <- find ufs u
   v' <- find ufs v
