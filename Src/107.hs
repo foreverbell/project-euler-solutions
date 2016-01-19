@@ -18,7 +18,7 @@ kruskal (n, _, edges) = runST $ do
   let sortedE = sortBy (compare `on` weight) edges
   forM_ sortedE $ \(u, v, w) -> do
     merged <- UF.union ufs u v
-    when merged $ R.modify acc (+ w)
+    when merged $ R.modify_' acc (+ w)
   R.read acc
 
 comma :: String -> [String]

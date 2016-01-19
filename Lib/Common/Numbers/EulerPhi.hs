@@ -37,7 +37,7 @@ phiTo n = tail $ V.toList $ V.create $ do
   forM_ [2 .. n] $ \i -> do
     isPrime <- MV.unsafeRead sieve i
     when isPrime $ do
-      pt' <- R.modify pt (+ 1) 
+      pt' <- R.modify' pt (+ 1) 
       MV.unsafeWrite primes pt' i
       MV.unsafeWrite phi i (i - 1)
     phi' <- MV.unsafeRead phi i

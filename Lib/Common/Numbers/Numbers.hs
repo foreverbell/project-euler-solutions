@@ -105,4 +105,3 @@ crt = loop 1 1
   where
     loop _ res [] = res
     loop pp res ((p, r):rest) = loop (pp * p) (crt2 (pp, res) (p, r)) rest
-

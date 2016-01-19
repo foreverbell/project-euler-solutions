@@ -49,7 +49,7 @@ primesTo' n = runST $ do
   forM_ [2 .. n] $ \i -> do
     isPrime <- MV.unsafeRead sieve i
     when isPrime $ do
-      pt' <- R.modify pt (+ 1)
+      pt' <- R.modify' pt (+ 1)
       MV.unsafeWrite primes pt' i
     pt' <- R.read pt
     iterateLoopT 1 $ \j -> 

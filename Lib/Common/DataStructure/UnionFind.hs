@@ -38,6 +38,6 @@ union ufs u v = do
   if u' /= v'
     then do
       MV.unsafeWrite (ufsSet ufs) u' v' 
-      R.modify (ufsSize ufs) pred
+      R.modify_' (ufsSize ufs) pred
       return True
     else return False
