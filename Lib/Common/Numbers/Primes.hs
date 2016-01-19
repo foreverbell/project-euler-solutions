@@ -4,11 +4,13 @@ module Common.Numbers.Primes (
 , primesTo
 , primesTo'
 , testPrime
+, factorize
 , countPrimeApprox
 , countPrime
 , countPrime'
 ) where
 
+import           Control.Arrow (first)
 import           Control.Monad (forM_, when)
 import           Control.Monad.ST (runST)
 import           Control.Monad.Trans.Class (lift)
@@ -16,6 +18,10 @@ import           Control.Monad.Trans.Loop (iterateLoopT, exit)
 import qualified Data.Vector.Unboxed as V
 import qualified Data.Vector.Unboxed.Mutable as MV
 import           Data.Bits (shiftR, (.&.))
+import           Data.List (sort)
+import           Data.Maybe (isJust)
+import           Data.Either (isRight)
+import           System.Random (split, randomR, RandomGen)
 import           Common.Numbers.Numbers (powMod)
 import qualified Common.MonadRef as R
 import           Common.Util (isqrt, if')
@@ -65,7 +71,6 @@ primesTo' n = runST $ do
 
 primes10k = primesTo 10000
 
--- prime test 
 millerRabinTest :: Int -> Int -> Bool
 millerRabinTest n b = ((p == 1) || (p == n - 1) || (n == b)) || ((n `rem` b /= 0) && rec cnt p)
   where
@@ -100,7 +105,41 @@ testPrime n
   where 
     b = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
 
--- never underestimated for n <= 10^12
+pollardRho :: Int -> Int -> Int -> Maybe Int
+pollardRho n seed from = case until isRight (\(Left (y, cycle)) -> go cycle cycle y y) (Left (from, 1)) of
+                              Right 1 -> Nothing
+                              Right x -> Just x
+                              _ -> undefined
+  where
+    g x | n >= 2^31 = fromInteger $ ((toInteger x)^2 + toInteger seed) `rem` toInteger n
+        | otherwise = ((x^2 `rem` n) + seed) `rem` n
+    go :: Int -> Int -> Int -> Int -> Either (Int, Int) Int
+    go cycle 0 _ x = Left (x, cycle * 2)
+    go cycle count y x | x' == y = Right 1
+                       | d > 1 && d < n = Right d
+                       | otherwise = go cycle (count - 1) y x'
+      where
+        x' = g x
+        d = gcd (abs (x' - y)) n
+
+-- TODO: test
+factorize :: RandomGen g => g -> Int -> ([Int], g)
+factorize g n = sort `first` helper g n
+  where
+    helper g 1 = ([], g)
+    helper g n | testPrime n = ([n], g)
+               | otherwise = (xs ++ ys, g')
+      where
+        (Just d, g0) = until (isJust . fst) go (Nothing, g)
+        (g1, g2) = split g0
+        (xs, g') = helper g1 d
+        (ys, _)  = helper g2 (n `quot` d)
+        go (_, g) = (pollardRho n seed from, g2)
+          where
+            (seed, g1) = randomR (1, n - 1) g
+            (from, g2) = randomR (1, n - 1) g1
+
+-- | never underestimated for n <= 10^12
 countPrimeApprox :: Int -> Int
 countPrimeApprox = truncate . appi . fromIntegral 
   where

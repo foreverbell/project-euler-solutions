@@ -33,6 +33,7 @@ library
                      , containers
                      , vector
                      , text
+                     , random
                      , deepseq
                      , template-haskell
                      , primitive
