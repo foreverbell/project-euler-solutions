@@ -1,18 +1,16 @@
 
-import Control.Monad (guard)
+import Control.Arrow (first)
+import System.Random (mkStdGen)
+import Common.Numbers.Primes (factorize, toDivisors)
 
-solve n = n + 2 * k where
-    p3 = 20 : map findNext p3
-    k = last $ takeWhile (<= n) p3
-    findNext n = n + k where
-        factorize n = concat $ do
-            let root = (floor . sqrt . fromIntegral) n 
-            d <- [1 .. root]
-            guard $ (n `mod` d) == 0
-            if (d * d == n)
-                then return [d]
-                else return [d, n `div` d]
-        factors = drop 1 $ factorize $ (2 * n - 1)
-        k = minimum [((n `div` d) + 1) * d - n | d <- factors]
+solve :: Int -> Int
+solve n = n + 2 * k 
+  where
+    k = fst . last $ takeWhile (\(a, _) -> a <= n) p3
+    p3 = (20, mkStdGen 23) : map next p3
+    next (n, g) = (n + k, g0)
+      where
+        (ds, g0) = toDivisors `first` factorize g (2 * n - 1)
+        k = minimum [((n `div` d) + 1) * d - n | d <- drop 1 ds]
 
 main = print $ solve (10^15)

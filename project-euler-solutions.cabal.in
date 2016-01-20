@@ -37,7 +37,6 @@ library
                      , deepseq
                      , template-haskell
                      , primitive
-                     , mtl
                      , transformers
                      , parallel
                      , control-monad-loop

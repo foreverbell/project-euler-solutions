@@ -5,20 +5,21 @@ module Common.Numbers.Primes (
 , primesTo'
 , testPrime
 , factorize
+, toDivisors
 , countPrimeApprox
 , countPrime
 , countPrime'
 ) where
 
 import           Control.Arrow (first)
-import           Control.Monad (forM_, when)
+import           Control.Monad (forM_, foldM, when)
 import           Control.Monad.ST (runST)
 import           Control.Monad.Trans.Class (lift)
 import           Control.Monad.Trans.Loop (iterateLoopT, exit) 
 import qualified Data.Vector.Unboxed as V
 import qualified Data.Vector.Unboxed.Mutable as MV
 import           Data.Bits (shiftR, (.&.))
-import           Data.List (sort)
+import           Data.List (sort, group)
 import           Data.Maybe (isJust)
 import           Data.Either (isRight)
 import           System.Random (split, randomR, RandomGen)
@@ -122,7 +123,6 @@ pollardRho n seed from = case until isRight (\(Left (y, cycle)) -> go cycle cycl
         x' = g x
         d = gcd (abs (x' - y)) n
 
--- TODO: test
 factorize :: RandomGen g => g -> Int -> ([Int], g)
 factorize g n = sort `first` helper g n
   where
@@ -138,6 +138,12 @@ factorize g n = sort `first` helper g n
           where
             (seed, g1) = randomR (1, n - 1) g
             (from, g2) = randomR (1, n - 1) g1
+
+toDivisors :: [Int] -> [Int]
+toDivisors ps = sort $ foldM (\r xs -> map (*r) xs) 1 (map f (group ps))
+  where
+    f xs@(x:_) = take (1 + length xs) $ iterate (*x) 1
+    f [] = undefined
 
 -- | never underestimated for n <= 10^12
 countPrimeApprox :: Int -> Int

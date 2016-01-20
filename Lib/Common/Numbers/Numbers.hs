@@ -12,9 +12,9 @@ module Common.Numbers.Numbers (
 , crt
 ) where
 
-import qualified Data.Vector as V
 import           Data.Bits (Bits, (.&.), shiftR)
-import           Control.Monad.Identity
+import           Data.Maybe (fromJust)
+import qualified Data.Vector as V
 
 {-# INLINABLE factorial #-}
 {-# INLINABLE binomial #-}
@@ -64,7 +64,7 @@ exgcd a b = (d, y, x - (a `quot` b) * y)
   where
     (d, x, y) = exgcd b (a `rem` b)
 
--- p should be a prime.
+-- | p should be a prime.
 inverse :: (Integral a) => a -> a -> a
 inverse x p = if x' == 0 
   then undefined
@@ -72,8 +72,8 @@ inverse x p = if x' == 0
   where 
     x' = x `rem` p
 
--- x and m should be co-prime.
--- this version is preferred.
+-- | x and m should be co-prime.
+-- | this version is preferred.
 inverse' :: (Integral a) => a -> a -> a 
 inverse' x m = if d /= 1
   then undefined
@@ -91,7 +91,7 @@ inverseToM n m = V.toList cache
       return $ y * (m - q) `rem` m
 
 inverseTo :: (Integral a) => Int -> a -> [a]
-inverseTo n m = map runIdentity $ inverseToM n m 
+inverseTo n m = map fromJust $ inverseToM n m 
 
 crt2 :: (Integral a) => (a, a) -> (a, a) -> a
 crt2 (p1, r1) (p2, r2) = (a + b) `rem` n
