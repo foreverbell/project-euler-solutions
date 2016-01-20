@@ -6,7 +6,7 @@ import System.Environment (getArgs)
 import Text.Printf (printf)
 
 template = unlines [ "executable %d"
-                   , "  hs-source-dirs:      Src"
+                   , "  hs-source-dirs:      src"
                    , "  main-is:             %d.hs"
                    , "  ghc-options:         -threaded -O2 -fllvm -W -fwarn-tabs"
                    , "  build-depends:       %s"
@@ -31,7 +31,7 @@ filterDots fs = filter (\p -> p /= "." && p /= "..") fs
 main = do
   args <- getArgs
   fs <- case args of
-             [] -> map (read . dropSuffix) <$> filterDots <$> getDirectoryContents "Src/" :: IO [Int]
+             [] -> map (read . dropSuffix) <$> filterDots <$> getDirectoryContents "src/" :: IO [Int]
              xs -> return $ map read args
   putStrLn $ printf "found %d haskell file(s)." (length fs)
   templateIn <- readFile "project-euler-solutions.cabal.in"

@@ -13,7 +13,7 @@ cabal-version:       >=1.10
 tested-with:         GHC==7.10.3
 
 library
-  hs-source-dirs:      Lib
+  hs-source-dirs:      lib
   exposed-modules:     Common.DataStructure.Fenwick
                        Common.DataStructure.UnionFind
                        Common.List
@@ -27,7 +27,7 @@ library
                        Common.NumMod.MkNumMod
                        Common.NumMod.NumMod
                        Common.Polynomial.Polynomial
-                       Common.Util
+                       Common.Utils
   ghc-options:         -threaded -O2 -fllvm -W -fwarn-tabs
   build-depends:       base >= 4.7 && < 5
                      , containers
