@@ -1,1 +1,2 @@
-:set -i../Lib
+:set -i../lib
+:set -XDatatypeContexts
