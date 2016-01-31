@@ -98,7 +98,6 @@ testPrime :: Int -> Bool
 testPrime 1 = False
 testPrime 2 = True
 testPrime 3 = True
-testPrime 3215031751 = False
 testPrime n 
   | n <= 0 = False
   | n >= 100000000 = all (millerRabinTest n) (takeWhile (< n) b) 
