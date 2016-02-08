@@ -2,11 +2,14 @@ module Common.Utils (
   if'
 , (?)
 , isqrt
+, modifyArray
 , submasks
 , combmasks
 ) where
 
+import Data.Array.MArray (MArray, readArray, writeArray)
 import Data.Bits
+import Data.Ix (Ix)
 
 if' :: Bool -> t -> t -> t
 {-# INLINE if' #-}
@@ -21,6 +24,9 @@ p ? t = if' p (const t) id
 isqrt :: (Integral a) => a -> a
 {-# INLINABLE isqrt #-}
 isqrt = floor . sqrt . fromIntegral
+
+modifyArray :: (MArray a e m, Ix i) => a i e -> (e -> e) -> i -> m ()
+modifyArray a f i = readArray a i >>= writeArray a i . f
 
 submasks :: Int -> [Int]
 {-# INLINE submasks #-}
