@@ -26,6 +26,7 @@ isqrt :: (Integral a) => a -> a
 isqrt = floor . sqrt . fromIntegral
 
 modifyArray :: (MArray a e m, Ix i) => a i e -> (e -> e) -> i -> m ()
+{-# INLINABLE modifyArray #-}
 modifyArray a f i = readArray a i >>= writeArray a i . f
 
 submasks :: Int -> [Int]
