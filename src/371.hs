@@ -5,7 +5,7 @@ import           Data.Ix (Ix)
 import           Control.Monad (forM_)
 import           Text.Printf (printf)
 
-import Common.Utils (modifyArray)
+import Common.Utils (modifyArray, initArray)
 
 type DPArray = A.UArray (Int, Bool) Double
 
@@ -31,11 +31,6 @@ go dp0 = getProbability $ runSTUArray $ do
 solve = succ $ sum $ map snd $ take 500 $ iterate (go . fst) (init, 1)
   where
     init :: DPArray
-    init = runSTUArray $ do
-      dp <- MA.newArray ((0, False), (500, True)) 0
-      MA.writeArray dp (0, False) (1 / 1000)
-      MA.writeArray dp (0, True) (1 / 1000)
-      MA.writeArray dp (1, False) (998 / 1000)
-      return dp
+    init = runSTUArray $ initArray ((0, False), (500, True)) 0 [((0, False), 1/1000), ((0, True), 1/1000), ((1, False), 998/1000)]
 
 main = printf "%.8f\n" solve

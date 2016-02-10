@@ -3,12 +3,14 @@ module Common.Utils (
 , (?)
 , isqrt
 , modifyArray
+, initArray
 , submasks
 , combmasks
 ) where
 
-import Data.Array.MArray (MArray, readArray, writeArray)
-import Data.Bits
+import Control.Monad (forM_)
+import Data.Array.MArray (MArray, newArray, readArray, writeArray)
+import Data.Bits (shiftL, shiftR, complement, (.&.), (.|.))
 import Data.Ix (Ix)
 
 if' :: Bool -> t -> t -> t
@@ -28,6 +30,12 @@ isqrt = floor . sqrt . fromIntegral
 modifyArray :: (MArray a e m, Ix i) => a i e -> (e -> e) -> i -> m ()
 {-# INLINABLE modifyArray #-}
 modifyArray a f i = readArray a i >>= writeArray a i . f
+
+initArray :: (MArray a e m, Ix i) => (i, i) -> e -> [(i, e)] -> m (a i e)
+initArray (l, u) initValue setValues = do
+  a <- newArray (l, u) initValue
+  forM_ setValues $ \(i, e) -> writeArray a i e 
+  return a
 
 submasks :: Int -> [Int]
 {-# INLINE submasks #-}
