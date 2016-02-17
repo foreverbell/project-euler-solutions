@@ -18,7 +18,7 @@ import           Control.Monad.Trans.Class (lift)
 import           Control.Monad.Trans.Loop (iterateLoopT, exit) 
 import qualified Data.Vector.Unboxed as V
 import qualified Data.Vector.Unboxed.Mutable as MV
-import           Data.Bits (shiftR, (.&.))
+import           Data.Bits (shiftR)
 import           Data.List (sort, group)
 import           Data.Maybe (isJust)
 import           Data.Either (isRight)
@@ -73,26 +73,17 @@ primesTo' n = runST $ do
 primes10k = primesTo 10000
 
 millerRabinTest :: Int -> Int -> Bool
-millerRabinTest n b = ((p == 1) || (p == n - 1) || (n == b)) || ((n `rem` b /= 0) && rec cnt p)
+millerRabinTest n b = (p == 1 || p == n - 1 || n == b) || (n `rem` b /= 0 && check cnt p)
   where
-    tail0 x cnt = if (x .&. 1) == 1 
-      then (x, cnt)
-      else tail0 (x `shiftR` 1) (cnt + 1)
-    (m, cnt) = tail0 (n - 1) 0
-    p = if n < 2^31
-      then powMod b m n
-      else fromIntegral $ powMod (toInteger b) (toInteger m) (toInteger n)
-    rec 0 _ = False
-    rec cnt p = (p2 == n - 1) || rec (cnt - 1) p2 
-      where
-        p2 = if p < 2^31
-            then p^2 `rem` n
-            else fromIntegral $ (toInteger p)^2 `rem` (toInteger n)
+    (m, cnt) = until (odd . fst) (\(x, c) -> (x `shiftR` 1, c + 1)) (n - 1, 0)
+    p = if n < 2^31 then powMod b m n else fromIntegral (powMod (toInteger b) (toInteger m) (toInteger n))
+    check 0 _ = False
+    check cnt p = p2 == n - 1 || check (cnt - 1) p2 
+      where p2 = if p < 2^31 then p^2 `rem` n else fromIntegral ((toInteger p)^2 `rem` toInteger n)
 
 naiveTest :: Int -> Bool
 naiveTest n = all (\d -> n `rem` d /= 0) $ takeWhile (<= root) primes10k
-  where
-    root = isqrt n
+  where root = isqrt n
 
 testPrime :: Int -> Bool
 testPrime 1 = False
@@ -100,10 +91,9 @@ testPrime 2 = True
 testPrime 3 = True
 testPrime n 
   | n <= 0 = False
-  | n >= 100000000 = all (millerRabinTest n) (takeWhile (< n) b) 
+  | n >= 100000000 = all (\d -> n `rem` d /= 0) b && all (millerRabinTest n) b
   | otherwise = naiveTest n 
-  where 
-    b = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
+  where b = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
 
 pollardRho :: Int -> Int -> Int -> Maybe Int
 pollardRho n seed from = case until isRight (\(Left (y, cycle)) -> go cycle cycle y y) (Left (from, 1)) of
