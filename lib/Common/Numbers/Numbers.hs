@@ -1,3 +1,5 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Common.Numbers.Numbers (
   factorial
 , binomial
@@ -11,9 +13,10 @@ module Common.Numbers.Numbers (
 , inverseTo
 , crt2
 , crt
+, tonelliShanks
 ) where
 
-import           Data.Bits (Bits, (.&.), shiftR)
+import           Data.Bits (Bits, (.&.), shiftR, shiftL)
 import           Data.Maybe (fromJust)
 import qualified Data.Vector as V
 
@@ -109,3 +112,21 @@ crt = loop 1 1
   where
     loop _ res [] = res
     loop pp res ((p, r):rest) = loop (pp * p) (crt2 (pp, res) (p, r)) rest
+
+legendre :: (Integral a, Bits a) => a -> a -> a
+legendre n p = powMod n ((p - 1) `quot` 2) p
+
+tonelliShanks :: forall a. (Integral a, Bits a) => a -> a -> Maybe a
+{-# INLINABLE tonelliShanks #-}
+tonelliShanks n p | legendre n p /= 1 = Nothing
+                  | otherwise = Just r
+  where
+    (q, s) = until (odd . fst) (\(q0, s0) -> (q0 `quot` 2, s0 + 1)) (p - 1, 0)
+    z = head $ filter (\t -> legendre t p == p - 1) [1 .. ]
+    (r, _, _, _) = until (\(_, t, _, _) -> t == 1) iter (powMod n ((q+1) `quot` 2) p, powMod n q p, s, powMod z q p)
+    iter (r, t, m, c) = (r * b `rem` p, t * b2 `rem` p, i, b2)
+      where
+        i = fst $ head $ filter (\(_, x) -> x == 1) $ zip [0 .. m-1] $ iterate (\t0 -> t0 * t0 `rem` p) t
+        b = powMod c k p
+        b2 = b * b `rem` p
+        k = 1 `shiftL` (m - i - 1) :: a
