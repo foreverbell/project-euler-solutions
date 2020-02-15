@@ -12,17 +12,20 @@ Handle: [foreverbell](https://projecteuler.net/profile/foreverbell.png), friend 
 
 ## Build
 
-We provide two ways to build one solution.
+Two ways to build one solution.
 
-### makefile
-```
+### Makefile
+
+```sh
 $ make 42
 $ Build/42
 ```
+
 If ghc is complaining about missing packages, see `project-euler-solutions.cabal.in` and `configure` for more details.
 
 ### stack
-```
+
+```sh
 ./configure 42
 stack init
 stack build

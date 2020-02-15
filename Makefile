@@ -6,15 +6,15 @@ OBJECT_FILES := $(patsubst Src/%.hs, Build/%, $(SOURCE_FILES))
 
 all: $(OBJECT_FILES)
 	  
-Build/%: Src/%.hs
+build/%: src/%.hs
 	$(GHC) -iLib -o $@ $(GHC_FLAGS) $< 
 
-%: Build/%
+%: build/%
 	
 
 clean:
-	rm Src/*.o
-	rm Src/*.hi
+	rm src/*.o
+	rm src/*.hi
 	rm $(OBJECT_FILES)
 
 .PHONY: clean
